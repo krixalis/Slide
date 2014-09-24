@@ -4,7 +4,6 @@
 
 *.pydevproject
 .project
-.metadata
 bin/
 tmp/
 *.tmp
@@ -57,7 +56,6 @@ build/
 *_i.c
 *_p.c
 *.ilk
-*.meta
 *.obj
 *.pch
 *.pdb
@@ -217,3 +215,4 @@ pip-log.txt
 #Own stuff
 Library/
 Temp/UnityLockfile
+Temp/
