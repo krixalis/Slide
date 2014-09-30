@@ -12,6 +12,7 @@ public class CharControl : MonoBehaviour
     private float _moveDir;
     private float _jumpForce;
     private float _currentJumpForce;
+    private float _boostForce;
 
     private bool _isGrounded;
     private bool _allowUserChangeDir;
@@ -30,8 +31,9 @@ public class CharControl : MonoBehaviour
         _allowUserChangeDir = true;
         _moveDir = 1; // = right, -1 = left
 
-        _jumpForce = 12f; // Jump() specific.
+        _jumpForce = 8f; // Jump() specific.
         _currentJumpForce = _jumpForce; // ^
+        _boostForce = 2.25f; // ^
 
         _allowChangeDirection = true;
         _allowWallJump = true;
@@ -71,7 +73,7 @@ public class CharControl : MonoBehaviour
 
     private void Jump()
     {
-        if (Input.GetAxis("Jump") == 0 || _currentJumpForce <= 2f)
+        if (Input.GetAxis("Jump") == 0 || _currentJumpForce <= 1.2f)
         {
             _jumping = false;
             _currentJumpForce = _jumpForce;
@@ -79,7 +81,7 @@ public class CharControl : MonoBehaviour
         }
         rigidbody.velocity += new Vector3(0, _currentJumpForce, 0);
         //_currentJumpForce /= 1.66f;
-        _currentJumpForce -= _jumpForce/2f; // TODO: Make this not shit.
+        _currentJumpForce -= _jumpForce/6.66f; // TODO: Make this not shit.
     }
 
     private Vector3 _lPos;
@@ -116,7 +118,7 @@ public class CharControl : MonoBehaviour
                 ChangeDirection();
                 if (Input.GetAxis("Jump") == 1 && _allowWallJump)
                 {
-                    rigidbody.velocity += new Vector3(0, _jumpForce * 1.75f, 0);
+                    rigidbody.velocity += new Vector3(0, _jumpForce * _boostForce, 0);
                     Debug.Log("jumping");
                 }
                 break;
@@ -129,7 +131,7 @@ public class CharControl : MonoBehaviour
     {
         if (_allowChangeDirection)
         {
-            _moveDir -= _moveDir*2; // direction switch
+            _moveDir *= -1; // direction switch
             Debug.Log("User changed direction");
         }
         _allowUserChangeDir = false;
