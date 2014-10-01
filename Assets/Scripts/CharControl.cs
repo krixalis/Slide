@@ -18,6 +18,7 @@ public class CharControl : MonoBehaviour
     private bool _allowUserChangeDir;
     private bool _allowJump;
     private bool _allowWallJump;
+    private bool _wallJumpOccured;
     private bool _jumping;
 
     private bool _allowChangeDirection;
@@ -45,6 +46,7 @@ public class CharControl : MonoBehaviour
     private void FixedUpdate()
     {
         _allowChangeDirection = true;
+        _wallJumpOccured = false;
         _isGrounded = IsGrounded();
 
         // Determine if the direction may be changed (if player is grounded).
@@ -84,6 +86,7 @@ public class CharControl : MonoBehaviour
         {
             _jumping = false;
             _currentJumpForce = _jumpForce;
+            Debug.Log("Jump Ended");
             return;
         }
         rigidbody.velocity += new Vector3(0, _currentJumpForce, 0);
@@ -112,8 +115,11 @@ public class CharControl : MonoBehaviour
 
     private void OnCollisionEnter(Collision collisionInfo) // TODO: When moving toward the edge on a flat surface right after landing on it, the player will switch direction. Why is that? +++ Not sure if this is still true, hard to replicate
     {
-        if (IsFalling()) _allowWallJump = false; // Only allow the player to walljump if he hasn't started falling yet.
-        else
+        if (IsFalling())
+        {
+            _allowWallJump = false; // Only allow the player to walljump if he hasn't started falling yet.
+        }
+        else if (!_wallJumpOccured && !IsFalling())
         {
             _allowWallJump = true;
         }
@@ -126,7 +132,9 @@ public class CharControl : MonoBehaviour
                 if (Input.GetAxis("Jump") == 1 && _allowWallJump)
                 {
                     rigidbody.velocity += new Vector3(0, _jumpForce * _boostForce, 0);
-                    Debug.Log("jumping");
+                    _allowWallJump = false;
+                    _wallJumpOccured = true;
+                    Debug.Log("wall-jumping");
                 }
                 break;
             }
