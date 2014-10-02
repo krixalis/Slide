@@ -18,7 +18,7 @@ public class Health : MonoBehaviour
         _maxHealth = 3f; // 3 health for now, insta-death with insta-respawns instead?
         _currentHealth = _maxHealth;
 
-        _invincibilityTime = 3f; // 3 Seconds of invincibility for now
+        _invincibilityTime = 1.2f; // 3 Seconds of invincibility for now
         _elapsedInvincibility = 0f;
     }
 
@@ -42,6 +42,15 @@ public class Health : MonoBehaviour
         }
 
         UpdateInvincibility();
+
+        if (_isInvincible && transform.root.gameObject.renderer.material.color != Color.yellow)
+        {
+            transform.root.gameObject.renderer.material.color = Color.yellow; // Debug way of showing invincibility duration
+        }
+        else if (!_isInvincible && transform.root.gameObject.renderer.material.color == Color.yellow)
+        {
+            transform.root.gameObject.renderer.material.color = Color.white;
+        }
     }
 
     private bool isDead()
@@ -63,6 +72,8 @@ public class Health : MonoBehaviour
 
     private void UpdateInvincibility()
     {
+        if (!_isInvincible) return;
+
         UpdateTimer();
         if (_elapsedInvincibility >= _invincibilityTime)
         {
