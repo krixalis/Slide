@@ -25,8 +25,8 @@ public class Health : MonoBehaviour
     private void OnTriggerEnter(Collider otherCollider)
     {
         if (_isInvincible) return;
-        
-        if (otherCollider.gameObject.tag == "Enemy")
+
+        if (otherCollider.gameObject.tag == "Enemy" || otherCollider.gameObject.tag == "Trap")
         {
             _currentHealth -= 1f;
             GoInvincible();
