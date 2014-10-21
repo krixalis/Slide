@@ -2,7 +2,7 @@
 
 public class CameraFollow : MonoBehaviour 
 {
-    public Transform _player;
+    public Transform Player;
     public float TrackingSpeed = 8.0f;
     public float ZoomSpeed = 5.0f;
     public float AddedHeight = 4.0f;
@@ -12,22 +12,22 @@ public class CameraFollow : MonoBehaviour
     // Use this for initialization
     void Start () 
     {
-        if (_player == null)
-            _player = GameObject.FindGameObjectWithTag("Player").transform;
+        if (Player == null)
+            Player = GameObject.FindGameObjectWithTag("Player").transform;
     }
     
     // Update is called once per frame
     void Update () 
     {
-        if (_player == null)
+        if (Player == null)
             return;
-        Vector3 pos = _player.position;
+        Vector3 pos = Player.position;
 
         pos.z = transform.position.z;
-        pos.y = _player.position.y + AddedHeight;
+        pos.y = Player.position.y + AddedHeight;
         
 
         transform.position = Vector3.Lerp(transform.position, pos, TrackingSpeed * Time.deltaTime);
-        transform.LookAt(_player);
+        transform.LookAt(Player);
     }
 }

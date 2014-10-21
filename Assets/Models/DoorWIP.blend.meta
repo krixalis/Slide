@@ -24,7 +24,8 @@ ModelImporter:
     4300000: Right_Door
     4300002: Left_Door
     4300004: Door_Frame
-    7400000: Default Take
+    7400000: Open
+    7400002: Idle
     9500000: //RootNode
     11100000: //RootNode
     13700000: Left_Door
@@ -43,7 +44,91 @@ ModelImporter:
     animationScaleError: .5
     animationWrapMode: 0
     extraExposedTransformPaths: []
-    clipAnimations: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: Open
+      takeName: Default Take
+      firstFrame: 0
+      lastFrame: 23
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Door_Frame
+        weight: 1
+      - path: Door_L_Armature
+        weight: 1
+      - path: Door_L_Armature/Bone_0
+        weight: 1
+      - path: Door_R_Armature
+        weight: 1
+      - path: Door_R_Armature/Bone
+        weight: 1
+      - path: Left_Door
+        weight: 1
+      - path: Right_Door
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Idle
+      takeName: Default Take
+      firstFrame: 0
+      lastFrame: .100000001
+      wrapMode: 2
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Door_Frame
+        weight: 1
+      - path: Door_L_Armature
+        weight: 1
+      - path: Door_L_Armature/Bone_0
+        weight: 1
+      - path: Door_R_Armature
+        weight: 1
+      - path: Door_R_Armature/Bone
+        weight: 1
+      - path: Left_Door
+        weight: 1
+      - path: Right_Door
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
     isReadable: 1
   meshes:
     lODScreenPercentages: []

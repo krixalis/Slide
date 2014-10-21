@@ -1,6 +1,4 @@
-﻿using System.Security;
-using System.Threading;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class CharControl : MonoBehaviour
 {
@@ -8,6 +6,7 @@ public class CharControl : MonoBehaviour
 
     public float Acceleration;
     public float MaxSpeed;
+    public bool AllowControl;
 
     private float _moveDir;
     private float _jumpForce;
@@ -27,6 +26,7 @@ public class CharControl : MonoBehaviour
 
     private void Start()
     {
+        AllowControl = true;
         Acceleration = 8f;
         MaxSpeed = 12f;
 
@@ -45,6 +45,7 @@ public class CharControl : MonoBehaviour
     // FixedUpdate is called once per tick.
     private void FixedUpdate()
     {
+        if (AllowControl == false) return;
         _allowChangeDirection = true;
         _wallJumpOccured = false;
         _isGrounded = IsGrounded();
@@ -90,7 +91,6 @@ public class CharControl : MonoBehaviour
             return;
         }
         rigidbody.velocity += new Vector3(0, _currentJumpForce, 0);
-        //_currentJumpForce /= 1.66f;
         _currentJumpForce -= _jumpForce/6.66f; // TODO: Make this not shit.
     }
 
