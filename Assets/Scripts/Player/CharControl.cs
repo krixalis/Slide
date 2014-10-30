@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Linq;
+using UnityEngine;
+using Assets.Scripts.Player.Powerups;
 
 namespace Assets.Scripts.Player
 {
@@ -6,38 +8,36 @@ namespace Assets.Scripts.Player
     {
         private CharacterController _controller;
 
+        public bool AllowControl;
         public float Acceleration;
         public float MaxSpeed;
-        public bool AllowControl;
+        public float MoveDir;
+        public bool IsGrounded;
+        public bool AllowUserChangeDir;
+        public bool AllowChangeDirection;
+        public GameObject PowerUpDirection;
+        public Vector3 Velocity;
 
-        private float _moveDir;
         private float _jumpForce;
         private float _currentJumpForce;
         private float _boostForce;
-
-        private bool _isGrounded;
-        private bool _allowUserChangeDir;
         private bool _allowJump;
         private bool _allowWallJump;
         private bool _wallJumpOccured;
         private bool _jumping;
 
-        private bool _allowChangeDirection;
-        
-        public Vector3 Velocity; 
-        
         private void Start()
         {
             AllowControl = true;
 
-            _allowUserChangeDir = true;
-            _moveDir = 1; // = right, -1 = left
+            AllowUserChangeDir = true;
+            MoveDir = 1; // = right, -1 = left
 
             _jumpForce = 8f; // Jump() specific.
             _currentJumpForce = _jumpForce; // ^
             _boostForce = 2.25f; // ^
 
-            _allowChangeDirection = true;
+            AllowChangeDirection = true;
             _allowJump = true;
             _allowWallJump = true;
         }
@@ -46,39 +46,54 @@ namespace Assets.Scripts.Player
         private void FixedUpdate()
         {
             if (AllowControl == false) return;
-            _allowChangeDirection = true;
+            AllowChangeDirection = true;
             _wallJumpOccured = false;
-            _isGrounded = IsGrounded();
+            IsGrounded = OnGround();
 
-            HandleDirection();
-            HandleJump();
+            HandleDirectionPowerups();
 
-            HandleVelocity();
+            HandleJump(); //TODO: Handle Powerups
+
+            HandleVelocity(); //TODO: Handle Powerups
         }
 
-        private void HandleDirection()
+        public void HandleDirectionPowerups()
+        {
+            var directionPowerup = PowerUpManager.ActivePowerups.OfType<IDirectionPowerup>().FirstOrDefault();
+
+            if (directionPowerup != null)
+            {
+                directionPowerup.HandleDirection(this);
+            }
+            else
+            {
+                HandleDirection();
+            }
+        }
+
+        public void HandleDirection()
         {
             // Determine if the direction may be changed (if player is grounded).
-            if (Input.GetAxis("Fire1") == 1 && _allowUserChangeDir && _isGrounded)
+            if (Input.GetAxis("Fire1") == 1 && AllowUserChangeDir && IsGrounded)
             {
                 ChangeDirection();
-                _allowUserChangeDir = false;
+                AllowUserChangeDir = false;
             }
-            else if (!_allowUserChangeDir && _isGrounded && Input.GetAxis("Fire1") != 1)
+            else if (!AllowUserChangeDir && IsGrounded && Input.GetAxis("Fire1") != 1)
             {
-                _allowUserChangeDir = true;
+                AllowUserChangeDir = true;
             }
         }
 
         private void HandleJump()
         {
             // Determine if the player may jump (or is already jumping/isn't grounded).
-            if (Input.GetAxis("Jump") == 1 && !_jumping && _isGrounded && _allowJump)
+            if (Input.GetAxis("Jump") == 1 && !_jumping && IsGrounded && _allowJump)
             {
                 _jumping = true;
                 _allowJump = false;
             }
-            else if (Input.GetAxis("Jump") != 1 && !_jumping && _isGrounded && !_allowJump)
+            else if (Input.GetAxis("Jump") != 1 && !_jumping && IsGrounded && !_allowJump)
             {
                 _allowJump = true;
             }
@@ -88,7 +103,8 @@ namespace Assets.Scripts.Player
 
         private void HandleVelocity()
         {
-            rigidbody.velocity += new Vector3(_moveDir * Acceleration, 0, 0); // _moveDir is the sign whether to accelerate to the right or left.
+            rigidbody.velocity += new Vector3(MoveDir*Acceleration, 0, 0);
+                // _moveDir is the sign whether to accelerate to the right or left.
 
             Velocity = rigidbody.velocity;
             Velocity.x = Mathf.Clamp(Velocity.x, -MaxSpeed, MaxSpeed);
@@ -110,16 +126,16 @@ namespace Assets.Scripts.Player
 
         private void ChangeDirection()
         {
-            if (_allowChangeDirection)
+            if (AllowChangeDirection)
             {
-                _moveDir *= -1; // direction switch
+                MoveDir *= -1; // direction switch
                 Debug.Log("User changed direction");
             }
-            _allowUserChangeDir = false;
-            _allowChangeDirection = false;
+            AllowUserChangeDir = false;
+            AllowChangeDirection = false;
         }
 
-        private bool IsGrounded()
+        private bool OnGround()
         {
             return Velocity.y == 0f; // I should probably find a way to get rid of this, seems pretty silly.
         }
@@ -137,14 +153,15 @@ namespace Assets.Scripts.Player
                 if (contact.normal == Vector3.up)
                 {
                     Velocity.y = 0;
-                    _isGrounded = true;
+                    IsGrounded = true;
                     break;
                 }
-                _isGrounded = false;
+                IsGrounded = false;
             }
         }
 
-        private void OnCollisionEnter(Collision collisionInfo) // TODO: When moving toward the edge on a flat surface right after landing on it, the player will switch direction. Why is that? +++ Not sure if this is still true, hard to replicate
+        private void OnCollisionEnter(Collision collisionInfo)
+            // TODO: When moving toward the edge on a flat surface right after landing on it, the player will switch direction. Why is that? +++ Not sure if this is still true, hard to replicate
         {
             if (IsFalling())
             {
@@ -154,7 +171,7 @@ namespace Assets.Scripts.Player
             {
                 _allowWallJump = true;
             }
-        
+
             foreach (ContactPoint contact in collisionInfo.contacts)
             {
                 if (contact.normal.x != 0 && contact.normal != Vector3.up && contact.normal != Vector3.down)
@@ -162,7 +179,7 @@ namespace Assets.Scripts.Player
                     ChangeDirection();
                     if (Input.GetAxis("Jump") == 1 && _allowWallJump)
                     {
-                        rigidbody.velocity += new Vector3(0, _jumpForce * _boostForce, 0);
+                        rigidbody.velocity += new Vector3(0, _jumpForce*_boostForce, 0);
                         _allowWallJump = false;
                         _wallJumpOccured = true;
                         Debug.Log("wall-jumping");

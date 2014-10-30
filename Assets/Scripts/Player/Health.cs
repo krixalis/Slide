@@ -1,5 +1,4 @@
-﻿using System.Timers;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Health : MonoBehaviour
 {

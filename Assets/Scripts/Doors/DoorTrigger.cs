@@ -1,6 +1,5 @@
 ﻿using Assets.Scripts.Player;
 using UnityEngine;
-using System.Collections;
 
 public class DoorTrigger : MonoBehaviour
 {
