@@ -113,7 +113,7 @@ namespace Assets.Scripts.Player
 
         private void Jump()
         {
-            if (Input.GetAxis("Jump") == 0 || _currentJumpForce <= 1.2f)
+            if ((Input.GetAxis("Jump") == 0 || _currentJumpForce <= 1.2f) && _jumping)
             {
                 _jumping = false;
                 _currentJumpForce = _jumpForce;
@@ -124,7 +124,7 @@ namespace Assets.Scripts.Player
             _currentJumpForce -= _jumpForce/6.66f; // TODO: Make this not shit.
         }
 
-        private void ChangeDirection()
+        public void ChangeDirection()
         {
             if (AllowChangeDirection)
             {
@@ -179,6 +179,9 @@ namespace Assets.Scripts.Player
                     ChangeDirection();
                     if (Input.GetAxis("Jump") == 1 && _allowWallJump)
                     {
+                        _jumping = false;
+                        _currentJumpForce = _jumpForce; //reset jump to prevent otherwise possible walljump+jump overlap, which results in an undesired super-jump
+
                         rigidbody.velocity += new Vector3(0, _jumpForce*_boostForce, 0);
                         _allowWallJump = false;
                         _wallJumpOccured = true;

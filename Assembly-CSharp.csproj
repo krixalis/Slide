@@ -54,7 +54,6 @@
      <Compile Include="Assets\Scripts\Player\Powerups\IDirectionPowerup.cs" />
      <Compile Include="Assets\Scripts\Player\Powerups\MidairDirectionSwitch.cs" />
      <Compile Include="Assets\Scripts\Player\Powerups\PowerUpManager.cs" />
-     <Compile Include="Assets\Scripts\Player\Powerups\PowerUpTypes.cs" />
      <Compile Include="Assets\Scripts\Player\ReceivePowerup.cs" />
      <Compile Include="Assets\Scripts\Traps\SpikeTrigger.cs" />
   </ItemGroup>
