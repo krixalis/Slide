@@ -1,8 +1,10 @@
-﻿using Assets.Scripts.Player;
+﻿using System;
+using Assets.Scripts.Player;
 using UnityEngine;
 
 public class SwallowPlayer : MonoBehaviour
 {
+    public bool IsExit;
 
     public GameObject Door;
     public DoorTrigger DoorTrigger;
@@ -20,23 +22,29 @@ public class SwallowPlayer : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
-	    PullSpeed = 12.0f;
+	    if(PullSpeed == 0f) PullSpeed = 12.0f;
+
 	    IsPulling = false;
 
-	    Door = transform.root.gameObject;
-	    DoorTrigger = Door.GetComponent<DoorTrigger>();
+	    if (Door == null)
+	    {
+	        Door = transform.root.gameObject;
+	        DoorTrigger = Door.GetComponent<DoorTrigger>();
+	    }
 
 	    if (TargetPointBehindDoor == null)
 	    {
 	        TargetPointBehindDoor = transform.FindChild("TargetPointBehindDoor").gameObject;
-            TargetPosBehindDoor = TargetPointBehindDoor.transform.position;
 	    }
-        
+        TargetPosBehindDoor = TargetPointBehindDoor.transform.position;
+
+	    if (DoorTrigger.DoorType == "Exit") IsExit = true;
 	}
     
     // Update is called once per frame
     void FixedUpdate ()
     {
+        if (!IsExit) return;
         if (_player != null && DoorTrigger.DoorType == "Exit" && IsPulling)
         {
             _player.rigidbody.constraints = RigidbodyConstraints.None;

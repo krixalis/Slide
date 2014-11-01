@@ -51,7 +51,9 @@
      <Compile Include="Assets\Scripts\Doors\SwallowPlayer.cs" />
      <Compile Include="Assets\Scripts\Player\CharControl.cs" />
      <Compile Include="Assets\Scripts\Player\Health.cs" />
+     <Compile Include="Assets\Scripts\Player\Powerups\DoubleJump.cs" />
      <Compile Include="Assets\Scripts\Player\Powerups\IDirectionPowerup.cs" />
+     <Compile Include="Assets\Scripts\Player\Powerups\IJumpPowerup.cs" />
      <Compile Include="Assets\Scripts\Player\Powerups\MidairDirectionSwitch.cs" />
      <Compile Include="Assets\Scripts\Player\Powerups\PowerUpManager.cs" />
      <Compile Include="Assets\Scripts\Player\ReceivePowerup.cs" />

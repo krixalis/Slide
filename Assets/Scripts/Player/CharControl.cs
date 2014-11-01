@@ -15,16 +15,16 @@ namespace Assets.Scripts.Player
         public bool IsGrounded;
         public bool AllowUserChangeDir;
         public bool AllowChangeDirection;
+        public float JumpForce;
+        public bool AllowJump;
+        public bool Jumping;
         public GameObject PowerUpDirection;
         public Vector3 Velocity;
 
-        private float _jumpForce;
         private float _currentJumpForce;
         private float _boostForce;
-        private bool _allowJump;
         private bool _allowWallJump;
         private bool _wallJumpOccured;
-        private bool _jumping;
 
         private void Start()
         {
@@ -33,12 +33,12 @@ namespace Assets.Scripts.Player
             AllowUserChangeDir = true;
             MoveDir = 1; // = right, -1 = left
 
-            _jumpForce = 8f; // Jump() specific.
-            _currentJumpForce = _jumpForce; // ^
+            JumpForce = 8f; // Jump() specific.
+            _currentJumpForce = JumpForce; // ^
             _boostForce = 2.25f; // ^
 
             AllowChangeDirection = true;
-            _allowJump = true;
+            AllowJump = true;
             _allowWallJump = true;
         }
 
@@ -71,7 +71,21 @@ namespace Assets.Scripts.Player
             }
         }
 
-        public void HandleDirection()
+        public void HandleJumpPowerups()
+        {
+            var jumpPowerup = PowerUpManager.ActivePowerups.OfType<IJumpPowerup>().FirstOrDefault();
+
+            if (jumpPowerup != null)
+            {
+                jumpPowerup.HandleJump(this);
+            }
+            else
+            {
+                HandleJump();
+            }
+        }
+
+        private void HandleDirection()
         {
             // Determine if the direction may be changed (if player is grounded).
             if (Input.GetAxis("Fire1") == 1 && AllowUserChangeDir && IsGrounded)
@@ -88,17 +102,17 @@ namespace Assets.Scripts.Player
         private void HandleJump()
         {
             // Determine if the player may jump (or is already jumping/isn't grounded).
-            if (Input.GetAxis("Jump") == 1 && !_jumping && IsGrounded && _allowJump)
+            if (Input.GetAxis("Jump") == 1 && !Jumping && IsGrounded && AllowJump)
             {
-                _jumping = true;
-                _allowJump = false;
+                Jumping = true;
+                AllowJump = false;
             }
-            else if (Input.GetAxis("Jump") != 1 && !_jumping && IsGrounded && !_allowJump)
+            else if (Input.GetAxis("Jump") != 1 && !Jumping && IsGrounded && !AllowJump)
             {
-                _allowJump = true;
+                AllowJump = true;
             }
 
-            if (_jumping) Jump();
+            if (Jumping) Jump();
         }
 
         private void HandleVelocity()
@@ -111,17 +125,17 @@ namespace Assets.Scripts.Player
             rigidbody.velocity = Velocity;
         }
 
-        private void Jump()
+        public void Jump()
         {
-            if ((Input.GetAxis("Jump") == 0 || _currentJumpForce <= 1.2f) && _jumping)
+            if ((Input.GetAxis("Jump") == 0 || _currentJumpForce <= 1.2f) && Jumping)
             {
-                _jumping = false;
-                _currentJumpForce = _jumpForce;
+                Jumping = false;
+                _currentJumpForce = JumpForce;
                 Debug.Log("Jump Ended");
                 return;
             }
             rigidbody.velocity += new Vector3(0, _currentJumpForce, 0);
-            _currentJumpForce -= _jumpForce/6.66f; // TODO: Make this not shit.
+            _currentJumpForce -= JumpForce/6.66f; // TODO: Make this not shit.
         }
 
         public void ChangeDirection()
@@ -179,10 +193,10 @@ namespace Assets.Scripts.Player
                     ChangeDirection();
                     if (Input.GetAxis("Jump") == 1 && _allowWallJump)
                     {
-                        _jumping = false;
-                        _currentJumpForce = _jumpForce; //reset jump to prevent otherwise possible walljump+jump overlap, which results in an undesired super-jump
+                        Jumping = false;
+                        _currentJumpForce = JumpForce; //reset jump to prevent otherwise possible walljump+jump overlap, which results in an undesired super-jump
 
-                        rigidbody.velocity += new Vector3(0, _jumpForce*_boostForce, 0);
+                        rigidbody.velocity += new Vector3(0, JumpForce*_boostForce, 0);
                         _allowWallJump = false;
                         _wallJumpOccured = true;
                         Debug.Log("wall-jumping");

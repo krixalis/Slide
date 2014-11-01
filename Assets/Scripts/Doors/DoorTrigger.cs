@@ -18,20 +18,18 @@ public class DoorTrigger : MonoBehaviour
     // Use this for initialization
     void Start ()
     {
-        PullSpeed = 2.0f;
-        if (TargetPoint == null)
-        {
-            TargetPoint = transform.FindChild("TargetPoint").gameObject;
-            TargetPos = TargetPoint.transform.position;
-        }
+        if(PullSpeed == 0f) PullSpeed = 2.0f;
+        
+        TargetPoint = transform.FindChild("TargetPoint").gameObject;
+        TargetPos = TargetPoint.transform.position;
+        
     
         if (DoorType == "")
         {
+            Debug.Log("Did not set DoorType!");
             DoorType = "Exit";
             IsDoorOpen = false;
         }
-        if (DoorType == "Start")
-            IsDoorOpen = true;
     }
     
     // Update is called once per frame

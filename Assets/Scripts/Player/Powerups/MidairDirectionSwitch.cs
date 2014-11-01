@@ -2,7 +2,7 @@
 
 namespace Assets.Scripts.Player.Powerups
 {
-    public class MidairDirectionPowerup : Powerup, IDirectionPowerup 
+    public class MidairDirectionPowerup : Powerup, IDirectionPowerup //TODO: Probably want this to only allow one direction change in air
     {
         private CharControl _charctrl;
         public void HandleDirection(CharControl charctrl)
