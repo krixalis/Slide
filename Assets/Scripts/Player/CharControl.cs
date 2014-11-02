@@ -18,23 +18,27 @@ namespace Assets.Scripts.Player
         public float JumpForce;
         public bool AllowJump;
         public bool Jumping;
+        public int JumpCount;
+        public float CurrentJumpForce;
+        public bool JumpDesired;
         public GameObject PowerUpDirection;
         public Vector3 Velocity;
-
-        private float _currentJumpForce;
+        
         private float _boostForce;
         private bool _allowWallJump;
         private bool _wallJumpOccured;
 
         private void Start()
         {
+            JumpDesired = false;
+            JumpCount = 0;
             AllowControl = true;
 
             AllowUserChangeDir = true;
             MoveDir = 1; // = right, -1 = left
 
             JumpForce = 8f; // Jump() specific.
-            _currentJumpForce = JumpForce; // ^
+            CurrentJumpForce = JumpForce; // ^
             _boostForce = 2.25f; // ^
 
             AllowChangeDirection = true;
@@ -42,9 +46,32 @@ namespace Assets.Scripts.Player
             _allowWallJump = true;
         }
 
+        /// <summary>
+        /// We use JumpDesired in CharControl for powerups.
+        /// It is stored here because Update() is called by the gameObject,
+        /// which is needed for GetButtonDown because it is an event which lasts for 1 frame.
+        /// This means that if we were to listen to the button press in a powerup
+        /// it wouldn't catch all requests by the user, since it will be called from within FixedUpdate.
+        /// This is less tedious than putting the powerup in a loose gameObject
+        /// and accessing it from there, rather than just accessing the code on its own as I do now.
+        /// 
+        /// To take into consideration: 
+        /// Maybe use Update() instead of FixedUpdate for our player handling.
+        /// Probably a bad idea because frame(-rate) dependent input is bad.
+        /// My future, awake, self shall judge this tomorrow.
+        /// </summary>
+        private void Update()
+        {
+            if (!JumpDesired) JumpDesired = Input.GetButtonDown("Jump");
+            //This effectively queues up a jump.
+            //Using an Input-Axis would make things overly complicated.
+        }
+
         // FixedUpdate is called once per tick.
         private void FixedUpdate()
         {
+            if (IsGrounded) JumpCount = 0;
+
             if (AllowControl == false) return;
             AllowChangeDirection = true;
             _wallJumpOccured = false;
@@ -52,7 +79,7 @@ namespace Assets.Scripts.Player
 
             HandleDirectionPowerups();
 
-            HandleJump(); //TODO: Handle Powerups
+            HandleJumpPowerups(); //TODO: Handle Powerups
 
             HandleVelocity(); //TODO: Handle Powerups
         }
@@ -127,15 +154,15 @@ namespace Assets.Scripts.Player
 
         public void Jump()
         {
-            if ((Input.GetAxis("Jump") == 0 || _currentJumpForce <= 1.2f) && Jumping)
+            if ((Input.GetAxis("Jump") == 0 || CurrentJumpForce <= 1.2f) && Jumping)
             {
                 Jumping = false;
-                _currentJumpForce = JumpForce;
-                Debug.Log("Jump Ended");
+                CurrentJumpForce = JumpForce;
+                //Debug.Log("Jump Ended");
                 return;
             }
-            rigidbody.velocity += new Vector3(0, _currentJumpForce, 0);
-            _currentJumpForce -= JumpForce/6.66f; // TODO: Make this not shit.
+            rigidbody.velocity += new Vector3(0, CurrentJumpForce, 0);
+            CurrentJumpForce -= JumpForce/6.66f; // TODO: Make this not shit.
         }
 
         public void ChangeDirection()
@@ -143,7 +170,7 @@ namespace Assets.Scripts.Player
             if (AllowChangeDirection)
             {
                 MoveDir *= -1; // direction switch
-                Debug.Log("User changed direction");
+                //Debug.Log("User changed direction");
             }
             AllowUserChangeDir = false;
             AllowChangeDirection = false;
@@ -154,7 +181,7 @@ namespace Assets.Scripts.Player
             return Velocity.y == 0f; // I should probably find a way to get rid of this, seems pretty silly.
         }
 
-        private bool IsFalling()
+        public bool IsFalling()
         {
             return Velocity.y < 0f;
         }
@@ -194,12 +221,12 @@ namespace Assets.Scripts.Player
                     if (Input.GetAxis("Jump") == 1 && _allowWallJump)
                     {
                         Jumping = false;
-                        _currentJumpForce = JumpForce; //reset jump to prevent otherwise possible walljump+jump overlap, which results in an undesired super-jump
+                        CurrentJumpForce = JumpForce; //reset jump to prevent otherwise possible walljump+jump overlap, which results in an undesired super-jump
 
                         rigidbody.velocity += new Vector3(0, JumpForce*_boostForce, 0);
                         _allowWallJump = false;
                         _wallJumpOccured = true;
-                        Debug.Log("wall-jumping");
+                        //Debug.Log("wall-jumping");
                     }
                     break;
                 }
