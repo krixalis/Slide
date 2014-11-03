@@ -20,7 +20,6 @@ namespace Assets.Scripts.Player
         public bool Jumping;
         public int JumpCount;
         public float CurrentJumpForce;
-        public bool JumpDesired;
         public GameObject PowerUpDirection;
         public Vector3 Velocity;
         
@@ -30,7 +29,6 @@ namespace Assets.Scripts.Player
 
         private void Start()
         {
-            JumpDesired = false;
             JumpCount = 0;
             AllowControl = true;
 
@@ -45,41 +43,28 @@ namespace Assets.Scripts.Player
             AllowJump = true;
             _allowWallJump = true;
         }
-
-        /// <summary>
-        /// We use JumpDesired in CharControl for powerups.
-        /// It is stored here because Update() is called by the gameObject,
-        /// which is needed for GetButtonDown because it is an event which lasts for 1 frame.
-        /// This means that if we were to listen to the button press in a powerup
-        /// it wouldn't catch all requests by the user, since it will be called from within FixedUpdate.
-        /// This is less tedious than putting the powerup in a loose gameObject
-        /// and accessing it from there, rather than just accessing the code on its own as I do now.
-        /// 
-        /// To take into consideration: 
-        /// Maybe use Update() instead of FixedUpdate for our player handling.
-        /// Probably a bad idea because frame(-rate) dependent input is bad.
-        /// My future, awake, self shall judge this tomorrow.
-        /// </summary>
+        
+        //Update is called each frame.
         private void Update()
         {
-            if (!JumpDesired) JumpDesired = Input.GetButtonDown("Jump");
-            //This effectively queues up a jump.
-            //Using an Input-Axis would make things overly complicated.
-        }
+            if (!AllowControl) return;
 
-        // FixedUpdate is called once per tick.
-        private void FixedUpdate()
-        {
             if (IsGrounded) JumpCount = 0;
 
-            if (AllowControl == false) return;
             AllowChangeDirection = true;
             _wallJumpOccured = false;
             IsGrounded = OnGround();
 
             HandleDirectionPowerups();
 
-            HandleJumpPowerups(); //TODO: Handle Powerups
+            HandleJumpPowerups();
+        }
+         
+
+        // FixedUpdate is called once per tick.
+        private void FixedUpdate()
+        {
+            if (!AllowControl) return;
 
             HandleVelocity(); //TODO: Handle Powerups
         }
@@ -115,7 +100,7 @@ namespace Assets.Scripts.Player
         private void HandleDirection()
         {
             // Determine if the direction may be changed (if player is grounded).
-            if (Input.GetAxis("Fire1") == 1 && AllowUserChangeDir && IsGrounded)
+            if (Input.GetButtonDown("Jump") && AllowUserChangeDir && IsGrounded)
             {
                 ChangeDirection();
                 AllowUserChangeDir = false;
@@ -129,12 +114,12 @@ namespace Assets.Scripts.Player
         private void HandleJump()
         {
             // Determine if the player may jump (or is already jumping/isn't grounded).
-            if (Input.GetAxis("Jump") == 1 && !Jumping && IsGrounded && AllowJump)
+            if (Input.GetButtonDown("Jump") && !Jumping && IsGrounded && AllowJump)
             {
                 Jumping = true;
                 AllowJump = false;
             }
-            else if (Input.GetAxis("Jump") != 1 && !Jumping && IsGrounded && !AllowJump)
+            else if (Input.GetButtonDown("Jump") && !Jumping && IsGrounded && !AllowJump)
             {
                 AllowJump = true;
             }
@@ -154,7 +139,7 @@ namespace Assets.Scripts.Player
 
         public void Jump()
         {
-            if ((Input.GetAxis("Jump") == 0 || CurrentJumpForce <= 1.2f) && Jumping)
+            if ((Input.GetButtonDown("Jump") || CurrentJumpForce <= 1.2f) && Jumping)
             {
                 Jumping = false;
                 CurrentJumpForce = JumpForce;
@@ -218,7 +203,7 @@ namespace Assets.Scripts.Player
                 if (contact.normal.x != 0 && contact.normal != Vector3.up && contact.normal != Vector3.down)
                 {
                     ChangeDirection();
-                    if (Input.GetAxis("Jump") == 1 && _allowWallJump)
+                    if (Input.GetButton("Jump") && _allowWallJump)
                     {
                         Jumping = false;
                         CurrentJumpForce = JumpForce; //reset jump to prevent otherwise possible walljump+jump overlap, which results in an undesired super-jump
