@@ -61,7 +61,6 @@ public class Health : MonoBehaviour
     {
         _timer = Time.time;
         _isInvincible = true;
-        Debug.Log("Now went invincible.");
     }
 
     private void UpdateTimer()
@@ -78,8 +77,6 @@ public class Health : MonoBehaviour
         {
             _isInvincible = false;
             _elapsedInvincibility = 0f;
-            Debug.Log("No longer invincible.");
         }
-        Debug.Log("Invincibility updated.");
     }
 }

@@ -13,9 +13,6 @@ public class DoubleJump : Powerup, IJumpPowerup
     {
         if (_charctrl == null) _charctrl = charctrl;
 
-        Debug.Log("jumpcount: " + _charctrl.JumpCount);
-
-
         if (_charctrl.JumpDesired && _charctrl.JumpCount < 1) // 1 because the JumpCount becomes 2
         {
             _charctrl.JumpDesired = false;
@@ -38,7 +35,6 @@ public class DoubleJump : Powerup, IJumpPowerup
         {
             _charctrl.Jumping = false;
             _charctrl.CurrentJumpForce = _charctrl.JumpForce;
-            Debug.Log("Jump Ended");
             return;
         }
 

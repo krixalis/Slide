@@ -159,7 +159,6 @@ namespace Assets.Scripts.Player
             {
                 Jumping = false;
                 CurrentJumpForce = JumpForce;
-                //Debug.Log("Jump Ended");
                 return;
             }
             rigidbody.velocity += new Vector3(0, CurrentJumpForce, 0);
@@ -171,7 +170,6 @@ namespace Assets.Scripts.Player
             if (AllowChangeDirection)
             {
                 MoveDir *= -1; // direction switch
-                //Debug.Log("User changed direction");
             }
             AllowUserChangeDir = false;
             AllowChangeDirection = false;
@@ -227,7 +225,6 @@ namespace Assets.Scripts.Player
                         rigidbody.velocity += new Vector3(0, JumpForce * _boostForce, 0);
                         _allowWallJump = false;
                         _wallJumpOccured = true;
-                        //Debug.Log("wall-jumping");
                     }
                     break;
                 }

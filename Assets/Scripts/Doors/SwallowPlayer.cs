@@ -63,7 +63,6 @@ public class SwallowPlayer : MonoBehaviour
 
     private void PullPlayer()
     {
-        Debug.Log("Pulling into door");
         _player.transform.position = Vector3.Lerp(_player.transform.position, TargetPosBehindDoor, PullSpeed * Time.deltaTime);
     }
 
