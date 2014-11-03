@@ -5,19 +5,20 @@ using UnityEngine;
 public class DoubleJump : Powerup, IJumpPowerup
 {
     private bool _allowAirJump = false;
-    private bool _jumpDesired = false;
     private CharControl _charctrl;
-    
+
+
 
     public void HandleJump(CharControl charctrl)
     {
         if (_charctrl == null) _charctrl = charctrl;
 
-        _jumpDesired = Input.GetButtonDown("Jump");
+        Debug.Log("jumpcount: " + _charctrl.JumpCount);
 
-        if (_jumpDesired && _charctrl.JumpCount < 1) // 1 because the JumpCount becomes 2
+
+        if (_charctrl.JumpDesired && _charctrl.JumpCount < 1) // 1 because the JumpCount becomes 2
         {
-            _jumpDesired = false;
+            _charctrl.JumpDesired = false;
             _charctrl.Jumping = true;
             _charctrl.CurrentJumpForce = _charctrl.JumpForce;
 
@@ -33,7 +34,7 @@ public class DoubleJump : Powerup, IJumpPowerup
 
     private void Jump()
     {
-        if ((Input.GetButton("Jump") || _charctrl.CurrentJumpForce <= 1.2f) && _charctrl.Jumping)
+        if ((Input.GetAxis("Jump") == 0 || _charctrl.CurrentJumpForce <= 1.2f) && _charctrl.Jumping)
         {
             _charctrl.Jumping = false;
             _charctrl.CurrentJumpForce = _charctrl.JumpForce;

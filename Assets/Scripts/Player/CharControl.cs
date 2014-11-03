@@ -20,15 +20,17 @@ namespace Assets.Scripts.Player
         public bool Jumping;
         public int JumpCount;
         public float CurrentJumpForce;
+        public bool JumpDesired;
         public GameObject PowerUpDirection;
         public Vector3 Velocity;
-        
+
         private float _boostForce;
         private bool _allowWallJump;
         private bool _wallJumpOccured;
 
         private void Start()
         {
+            JumpDesired = false;
             JumpCount = 0;
             AllowControl = true;
 
@@ -43,28 +45,42 @@ namespace Assets.Scripts.Player
             AllowJump = true;
             _allowWallJump = true;
         }
-        
-        //Update is called each frame.
+
+        /// <summary>
+        /// We use JumpDesired in CharControl for powerups.
+        /// It is stored here because Update() is called by the gameObject,
+        /// which is needed for GetButtonDown because it is an event which lasts for 1 frame.
+        /// This means that if we were to listen to the button press in a powerup
+        /// it wouldn't catch all requests by the user, since it will be called from within FixedUpdate.
+        /// This is less tedious than putting the powerup in a loose gameObject
+        /// and accessing it from there, rather than just accessing the code on its own as I do now.
+        /// 
+        /// To take into consideration: 
+        /// Maybe use Update() instead of FixedUpdate for our player handling.
+        /// Probably a bad idea because frame(-rate) dependent input is bad.
+        /// My future, awake, self shall judge this tomorrow.
+        /// </summary>
         private void Update()
         {
-            if (!AllowControl) return;
+            if (!JumpDesired) JumpDesired = Input.GetButtonDown("Jump");
+            //This effectively queues up a jump.
+            //Using an Input-Axis would make things overly complicated.
 
-            if (IsGrounded) JumpCount = 0;
-
+            if (AllowControl == false) return;
             AllowChangeDirection = true;
             _wallJumpOccured = false;
-            IsGrounded = OnGround();
+
 
             HandleDirectionPowerups();
 
-            HandleJumpPowerups();
+            HandleJumpPowerups(); //TODO: Handle Powerups
         }
-         
 
         // FixedUpdate is called once per tick.
         private void FixedUpdate()
         {
-            if (!AllowControl) return;
+            IsGrounded = OnGround();
+            if (IsGrounded) JumpCount = 0;
 
             HandleVelocity(); //TODO: Handle Powerups
         }
@@ -100,7 +116,7 @@ namespace Assets.Scripts.Player
         private void HandleDirection()
         {
             // Determine if the direction may be changed (if player is grounded).
-            if (Input.GetButtonDown("Jump") && AllowUserChangeDir && IsGrounded)
+            if (Input.GetAxis("Fire1") == 1 && AllowUserChangeDir && IsGrounded)
             {
                 ChangeDirection();
                 AllowUserChangeDir = false;
@@ -114,12 +130,12 @@ namespace Assets.Scripts.Player
         private void HandleJump()
         {
             // Determine if the player may jump (or is already jumping/isn't grounded).
-            if (Input.GetButtonDown("Jump") && !Jumping && IsGrounded && AllowJump)
+            if (Input.GetAxis("Jump") == 1 && !Jumping && IsGrounded && AllowJump)
             {
                 Jumping = true;
                 AllowJump = false;
             }
-            else if (Input.GetButtonDown("Jump") && !Jumping && IsGrounded && !AllowJump)
+            else if (Input.GetAxis("Jump") != 1 && !Jumping && IsGrounded && !AllowJump)
             {
                 AllowJump = true;
             }
@@ -129,8 +145,8 @@ namespace Assets.Scripts.Player
 
         private void HandleVelocity()
         {
-            rigidbody.velocity += new Vector3(MoveDir*Acceleration, 0, 0);
-                // _moveDir is the sign whether to accelerate to the right or left.
+            rigidbody.velocity += new Vector3(MoveDir * Acceleration, 0, 0);
+            // _moveDir is the sign whether to accelerate to the right or left.
 
             Velocity = rigidbody.velocity;
             Velocity.x = Mathf.Clamp(Velocity.x, -MaxSpeed, MaxSpeed);
@@ -139,7 +155,7 @@ namespace Assets.Scripts.Player
 
         public void Jump()
         {
-            if ((Input.GetButtonDown("Jump") || CurrentJumpForce <= 1.2f) && Jumping)
+            if ((Input.GetAxis("Jump") == 0 || CurrentJumpForce <= 1.2f) && Jumping)
             {
                 Jumping = false;
                 CurrentJumpForce = JumpForce;
@@ -147,7 +163,7 @@ namespace Assets.Scripts.Player
                 return;
             }
             rigidbody.velocity += new Vector3(0, CurrentJumpForce, 0);
-            CurrentJumpForce -= JumpForce/6.66f; // TODO: Make this not shit.
+            CurrentJumpForce -= JumpForce / 6.66f; // TODO: Make this not shit.
         }
 
         public void ChangeDirection()
@@ -187,7 +203,7 @@ namespace Assets.Scripts.Player
         }
 
         private void OnCollisionEnter(Collision collisionInfo)
-            // TODO: When moving toward the edge on a flat surface right after landing on it, the player will switch direction. Why is that? +++ Not sure if this is still true, hard to replicate
+        // TODO: When moving toward the edge on a flat surface right after landing on it, the player will switch direction. Why is that? +++ Not sure if this is still true, hard to replicate
         {
             if (IsFalling())
             {
@@ -203,12 +219,12 @@ namespace Assets.Scripts.Player
                 if (contact.normal.x != 0 && contact.normal != Vector3.up && contact.normal != Vector3.down)
                 {
                     ChangeDirection();
-                    if (Input.GetButton("Jump") && _allowWallJump)
+                    if (Input.GetAxis("Jump") == 1 && _allowWallJump)
                     {
                         Jumping = false;
                         CurrentJumpForce = JumpForce; //reset jump to prevent otherwise possible walljump+jump overlap, which results in an undesired super-jump
 
-                        rigidbody.velocity += new Vector3(0, JumpForce*_boostForce, 0);
+                        rigidbody.velocity += new Vector3(0, JumpForce * _boostForce, 0);
                         _allowWallJump = false;
                         _wallJumpOccured = true;
                         //Debug.Log("wall-jumping");

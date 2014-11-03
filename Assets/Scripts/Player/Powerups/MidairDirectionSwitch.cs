@@ -9,12 +9,12 @@ namespace Assets.Scripts.Player.Powerups
         {
             _charctrl = charctrl;
             // Determine if the direction may be changed (if player is grounded).
-            if (Input.GetButtonDown("Fire1") && _charctrl.AllowUserChangeDir)
+            if (Input.GetAxis("Fire1") == 1 && _charctrl.AllowUserChangeDir)
             {
                 _charctrl.ChangeDirection();
                 _charctrl.AllowUserChangeDir = false;
             }
-            else if (!_charctrl.AllowUserChangeDir && Input.GetButtonDown("Fire1"))
+            else if (!_charctrl.AllowUserChangeDir && Input.GetAxis("Fire1") != 1)
             {
                 _charctrl.AllowUserChangeDir = true;
             }
