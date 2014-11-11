@@ -56,7 +56,6 @@ namespace Assets.Scripts.Player
             AllowChangeDirection = true;
             _wallJumpOccured = false;
 
-
             HandleDirectionPowerups();
 
             HandleJumpPowerups(); //TODO: Handle Powerups
@@ -78,6 +77,7 @@ namespace Assets.Scripts.Player
             if (directionPowerup != null)
             {
                 directionPowerup.HandleDirection(this);
+                Debug.Log("Srsly powerup dir?");
             }
             else
             {
@@ -200,6 +200,16 @@ namespace Assets.Scripts.Player
 
             foreach (ContactPoint contact in collisionInfo.contacts)
             {
+              /*
+                if (contact.otherCollider.tag == "Level") //probably useless
+                {
+                    if (contact.normal == Vector3.up)
+                    {
+                        IsGrounded = true;
+                    }
+                }
+              */
+
                 if (contact.normal.x != 0 && contact.normal != Vector3.up && contact.normal != Vector3.down)
                 {
                     ChangeDirection();
