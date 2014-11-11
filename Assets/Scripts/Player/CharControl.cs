@@ -46,20 +46,6 @@ namespace Assets.Scripts.Player
             _allowWallJump = true;
         }
 
-        /// <summary>
-        /// We use JumpDesired in CharControl for powerups.
-        /// It is stored here because Update() is called by the gameObject,
-        /// which is needed for GetButtonDown because it is an event which lasts for 1 frame.
-        /// This means that if we were to listen to the button press in a powerup
-        /// it wouldn't catch all requests by the user, since it will be called from within FixedUpdate.
-        /// This is less tedious than putting the powerup in a loose gameObject
-        /// and accessing it from there, rather than just accessing the code on its own as I do now.
-        /// 
-        /// To take into consideration: 
-        /// Maybe use Update() instead of FixedUpdate for our player handling.
-        /// Probably a bad idea because frame(-rate) dependent input is bad.
-        /// My future, awake, self shall judge this tomorrow.
-        /// </summary>
         private void Update()
         {
             if (!JumpDesired) JumpDesired = Input.GetButtonDown("Jump");
