@@ -1,5 +1,4 @@
-﻿using System;
-using Assets.Scripts.Player;
+﻿using Assets.Scripts.Player;
 using UnityEngine;
 
 public class SwallowPlayer : MonoBehaviour
@@ -18,6 +17,8 @@ public class SwallowPlayer : MonoBehaviour
     private GameObject _player;
     private CharControl _playerCharControl;
     private bool _playerIsDisabled;
+
+    public string SceneName;
     
 	// Use this for initialization
 	void Start ()
@@ -63,7 +64,14 @@ public class SwallowPlayer : MonoBehaviour
 
     private void PullPlayer()
     {
+        GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraFollow>().isDisabled = true;
         _player.transform.position = Vector3.Lerp(_player.transform.position, TargetPosBehindDoor, PullSpeed * Time.deltaTime);
+
+        if (!string.IsNullOrEmpty(SceneName)) Application.LoadLevel(SceneName);
+        else
+        {
+            Debug.Log("Failed to load scene: String is null or empty.");
+        }
     }
 
     private void OnTriggerEnter(Collider otherCollider)

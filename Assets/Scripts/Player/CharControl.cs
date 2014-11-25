@@ -52,7 +52,11 @@ namespace Assets.Scripts.Player
             //This effectively queues up a jump.
             //Using an Input-Axis would make things overly complicated.
 
-            if (AllowControl == false) return;
+            if (AllowControl == false)
+            {
+                transform.rigidbody.velocity = new Vector3(0, 0, 0);
+                return;
+            }
             AllowChangeDirection = true;
             _wallJumpOccured = false;
 
@@ -77,7 +81,6 @@ namespace Assets.Scripts.Player
             if (directionPowerup != null)
             {
                 directionPowerup.HandleDirection(this);
-                Debug.Log("Srsly powerup dir?");
             }
             else
             {

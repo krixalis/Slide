@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: a0b5e2e541b005143a1e9aa71c01f869
+guid: 6e48c3239c31d3446af5572326517764
 ModelImporter:
   serializedVersion: 16
   fileIDToRecycleName:
@@ -25,8 +25,8 @@ ModelImporter:
     4300002: Gear1
     4300004: Cube_001
     4300006: Gear2
-    7400000: Idle Up
-    7400002: Idle Down
+    7400000: Idle_Down
+    7400002: Idle_Up
     7400004: Retract
     7400006: Extend
     9500000: //RootNode
@@ -40,7 +40,7 @@ ModelImporter:
     bakeSimulation: 0
     optimizeGameObjects: 0
     motionNodeName: 
-    animationCompression: 0
+    animationCompression: 1
     animationRotationError: .5
     animationPositionError: .5
     animationScaleError: .5
@@ -48,7 +48,43 @@ ModelImporter:
     extraExposedTransformPaths: []
     clipAnimations:
     - serializedVersion: 16
-      name: Idle Up
+      name: Idle_Down
+      takeName: Default Take
+      firstFrame: 100
+      lastFrame: 100.099998
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Cube_001
+        weight: 1
+      - path: Cube_002
+        weight: 1
+      - path: Gear1
+        weight: 1
+      - path: Gear2
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Idle_Up
       takeName: Default Take
       firstFrame: 0
       lastFrame: .100000001
@@ -84,46 +120,10 @@ ModelImporter:
       maskType: 0
       maskSource: {instanceID: 0}
     - serializedVersion: 16
-      name: Idle Down
-      takeName: Default Take
-      firstFrame: 170
-      lastFrame: 170.100006
-      wrapMode: 0
-      orientationOffsetY: 0
-      level: 0
-      cycleOffset: 0
-      loop: 0
-      loopTime: 0
-      loopBlend: 0
-      loopBlendOrientation: 0
-      loopBlendPositionY: 0
-      loopBlendPositionXZ: 0
-      keepOriginalOrientation: 0
-      keepOriginalPositionY: 1
-      keepOriginalPositionXZ: 0
-      heightFromFeet: 0
-      mirror: 0
-      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
-      curves: []
-      events: []
-      transformMask:
-      - path: 
-        weight: 1
-      - path: Cube_001
-        weight: 1
-      - path: Cube_002
-        weight: 1
-      - path: Gear1
-        weight: 1
-      - path: Gear2
-        weight: 1
-      maskType: 0
-      maskSource: {instanceID: 0}
-    - serializedVersion: 16
       name: Retract
       takeName: Default Take
-      firstFrame: 1
-      lastFrame: 160
+      firstFrame: 0
+      lastFrame: 92
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -158,8 +158,8 @@ ModelImporter:
     - serializedVersion: 16
       name: Extend
       takeName: Default Take
-      firstFrame: 180
-      lastFrame: 349.000031
+      firstFrame: 104
+      lastFrame: 196
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
