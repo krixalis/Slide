@@ -37,6 +37,7 @@ public class Health : MonoBehaviour
     {
         if (isDead())
         {
+            Destroy(transform.root.gameObject);
             transform.root.gameObject.renderer.material.color = Color.red;
         }
 

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using UnityEngine;
 using Assets.Scripts.Player.Powerups;
 
@@ -48,6 +49,7 @@ namespace Assets.Scripts.Player
 
         private void Update()
         {
+            
             if (!JumpDesired) JumpDesired = Input.GetButtonDown("Jump");
             //This effectively queues up a jump.
             //Using an Input-Axis would make things overly complicated.
@@ -63,6 +65,11 @@ namespace Assets.Scripts.Player
             HandleDirectionPowerups();
 
             HandleJumpPowerups(); //TODO: Handle Powerups
+            /*
+            Debug.Log("Fire1: " + Input.GetButton("Fire1"));
+            Debug.Log("Jump: " + Input.GetButton("Jump"));
+            Debug.Log("isGrounded: " + IsGrounded);
+             */
         }
 
         // FixedUpdate is called once per tick.
@@ -104,11 +111,18 @@ namespace Assets.Scripts.Player
 
         private void HandleDirection()
         {
+            /*
+            Debug.Log("Fire1: " + Input.GetAxis("Fire1") + 
+                "AllowUserChangeDir: " + AllowUserChangeDir + 
+                "isGrounded: " + IsGrounded);
+             */
+
             // Determine if the direction may be changed (if player is grounded).
             if (Input.GetAxis("Fire1") == 1 && AllowUserChangeDir && IsGrounded)
             {
                 ChangeDirection();
                 AllowUserChangeDir = false;
+                Debug.Log("Shoulda changed direction");
             }
             else if (!AllowUserChangeDir && IsGrounded && Input.GetAxis("Fire1") != 1)
             {
@@ -123,6 +137,7 @@ namespace Assets.Scripts.Player
             {
                 Jumping = true;
                 AllowJump = false;
+                Debug.Log("Shoulda jumped");
             }
             else if (Input.GetAxis("Jump") != 1 && !Jumping && IsGrounded && !AllowJump)
             {
@@ -179,12 +194,17 @@ namespace Assets.Scripts.Player
             Velocity = rigidbody.velocity;
             foreach (ContactPoint contact in collisionInfo.contacts)
             {
-                if (contact.normal == Vector3.up)
+                float normalY = Math.Abs(contact.normal.y); // Absolute vaue because our margin of "error" is -0.1 to +0.1 in the following if-statement. This gets rid of a redundant negative check.
+                float desY = 1.0f;
+
+                if(normalY - desY <= 0.1f) //(contact.normal == Vector3.up)
                 {
                     Velocity.y = 0;
                     IsGrounded = true;
                     break;
                 }
+                bool pls = contact.normal == Vector3.up;
+                Debug.Log("isGrounded now false. " + "if: " + pls + ". contact.normal" + contact.normal + " == Vector3.up" + Vector3.up);
                 IsGrounded = false;
             }
         }
@@ -203,6 +223,9 @@ namespace Assets.Scripts.Player
 
             foreach (ContactPoint contact in collisionInfo.contacts)
             {
+                float normalX = Math.Abs(contact.normal.x);
+                float normalY = Math.Abs(contact.normal.y);
+                float des = 1.0f;
               /*
                 if (contact.otherCollider.tag == "Level") //probably useless
                 {
@@ -213,8 +236,9 @@ namespace Assets.Scripts.Player
                 }
               */
 
-                if (contact.normal.x != 0 && contact.normal != Vector3.up && contact.normal != Vector3.down)
+                if (normalX - des <= 0.1f && normalY - des <= -0.25f)//(contact.normal.x != 0 && contact.normal != Vector3.up && contact.normal != Vector3.down)
                 {
+                    Debug.Log("normalY: " + normalY);
                     ChangeDirection();
                     if (Input.GetAxis("Jump") == 1 && _allowWallJump)
                     {
