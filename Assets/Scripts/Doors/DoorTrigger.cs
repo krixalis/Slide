@@ -14,7 +14,7 @@ public class DoorTrigger : MonoBehaviour
     private GameObject _player;
     private CharControl _playerCharControl;
     private bool _playerIsDisabled;
-    
+
     // Use this for initialization
     void Start ()
     {

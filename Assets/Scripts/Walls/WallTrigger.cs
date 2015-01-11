@@ -47,6 +47,12 @@ public class WallTrigger : MonoBehaviour
 	    }
 	}
 
+    private void Lock()
+    {
+        if (!_locked) _locked = true;
+        else Debug.Log("Tried to lock an already locked door.");
+    }
+
     private void OnTriggerEnter(Collider otherCollider)
     {
         if (_locked) return;

@@ -122,7 +122,6 @@ namespace Assets.Scripts.Player
             {
                 ChangeDirection();
                 AllowUserChangeDir = false;
-                Debug.Log("Shoulda changed direction");
             }
             else if (!AllowUserChangeDir && IsGrounded && Input.GetAxis("Fire1") != 1)
             {
@@ -137,7 +136,6 @@ namespace Assets.Scripts.Player
             {
                 Jumping = true;
                 AllowJump = false;
-                Debug.Log("Shoulda jumped");
             }
             else if (Input.GetAxis("Jump") != 1 && !Jumping && IsGrounded && !AllowJump)
             {
@@ -238,7 +236,7 @@ namespace Assets.Scripts.Player
 
                 if (normalX - des <= 0.1f && normalY - des <= -0.25f)//(contact.normal.x != 0 && contact.normal != Vector3.up && contact.normal != Vector3.down)
                 {
-                    Debug.Log("normalY: " + normalY);
+                    //Debug.Log("normalY: " + normalY);
                     ChangeDirection();
                     if (Input.GetAxis("Jump") == 1 && _allowWallJump)
                     {

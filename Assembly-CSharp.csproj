@@ -57,6 +57,7 @@
      <Compile Include="Assets\Scripts\Player\Powerups\MidairDirectionSwitch.cs" />
      <Compile Include="Assets\Scripts\Player\Powerups\PowerUpManager.cs" />
      <Compile Include="Assets\Scripts\Player\ReceivePowerup.cs" />
+     <Compile Include="Assets\Scripts\Traps\DeathTrigger.cs" />
      <Compile Include="Assets\Scripts\Traps\SpikeTrigger.cs" />
      <Compile Include="Assets\Scripts\Walls\ToggleWall.cs" />
      <Compile Include="Assets\Scripts\Walls\WallTrigger.cs" />

@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class DoubleJump : Powerup, IJumpPowerup
 {
-    private bool _allowAirJump = false;
     private CharControl _charctrl;
 
 
