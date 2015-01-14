@@ -11,8 +11,7 @@ public class ReceivePowerup : MonoBehaviour {
         if (otherCollider.gameObject.tag == "PowerUp")
         {
             PowerUpManager.Evaluate(otherCollider.name);
-            otherCollider.gameObject.SetActive(false);
-            otherCollider.gameObject.GetComponent<PerstistanceScript>().IsActive = false;
+            Destroy(otherCollider.gameObject);
         }
 
     }
