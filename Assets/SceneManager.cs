@@ -1,26 +1,74 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
 public class SceneManager : MonoBehaviour
 {
+    public string SceneName;
     void OnLevelWasLoaded(int level)
     {
         string[] fullPath = EditorApplication.currentScene.Split(char.Parse("/"));
-        string path = fullPath[fullPath.Length - 1];
-        path = path.Substring(0, path.IndexOf('.'));
-        Debug.Log(path);
+        SceneName = fullPath[fullPath.Length - 1];
+        SceneName = SceneName.Substring(0, SceneName.IndexOf('.'));
+        Debug.Log(SceneName);
 
         try
         {
-            Stream curSceneFile = File.Open(path + ".sceneState", FileMode.Open);
+            Stream curSceneFile = File.Open(SceneName + ".sceneState", FileMode.Open);
         }
         catch (Exception)
         {
             
-            throw new Exception(String.Format("File {0}.sceneState not found", path));
+            throw new Exception(String.Format("File {0}.sceneState not found", SceneName));
         }
+    }
+
+    void FixedUpdate()
+    {
+        //Create sceneState
+        if (Input.GetButtonDown("DebugSave"))
+        {
+            //pushed P to save
+            if (SceneName == null) return;
+            try
+            {
+                Stream sceneFile = File.Open(SceneName + ".sceneState", FileMode.Open);
+                Debug.Log(String.Format("Existing file called \"{0}.sceneState\" found."));
+            }
+            catch
+            {
+                Debug.Log(String.Format("Could not find file \"{0}.sceneState\", creating..."));
+                //Debug.Log(String.Format("Creating file\"{0}.sceneState\"."));
+                //Stream sceneFile = File.Open(SceneName + ".sceneState", FileMode.Create);
+                //Debug.Log(String.Format("File \"{0}.sceneState\" created."));
+
+                var powerUps = GameObject.FindGameObjectsWithTag("PowerUp");
+
+                var powerUpStates = powerUps.ToDictionary(powerUp => powerUp, powerUp => powerUp.activeSelf);
+
+                var formatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+                var data = new SaveData()
+                {
+                    PowerUpSaves = powerUpStates
+                };
+
+                using (Stream sceneFile = File.Open(SceneName + ".sceneState", FileMode.Create))
+                {
+                    //serialize directly into that stream.
+                    formatter.Serialize(sceneFile, data);
+                }
+            }
+        }
+    }
+
+    //thi is our save data structure.
+    [Serializable] //needs to be marked as serializable
+    struct SaveData
+    {
+        public Dictionary<GameObject, bool> PowerUpSaves;
     }
 
 
