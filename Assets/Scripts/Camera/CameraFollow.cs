@@ -6,14 +6,12 @@ public class CameraFollow : MonoBehaviour
     public float TrackingSpeed = 8.0f;
     public float ZoomSpeed = 5.0f;
     public float AddedHeight = 4.0f;
-    public bool isDisabled;
-
-    private float t;
+    public bool IsDisabled;
 
     // Use this for initialization
     void Start ()
     {
-        isDisabled = false;
+        IsDisabled = false;
         if (Player == null)
             Player = GameObject.FindGameObjectWithTag("Player").transform;
     }
@@ -21,16 +19,17 @@ public class CameraFollow : MonoBehaviour
     // Update is called once per frame
     void Update ()
     {
-        if (isDisabled) return;
-        if (Player == null)
-            return;
+
+        if (IsDisabled) return;
+        if (Player == null) return;
         Vector3 pos = Player.position;
 
         pos.z = transform.position.z;
         pos.y = Player.position.y + AddedHeight;
-        
+
 
         transform.position = Vector3.Lerp(transform.position, pos, TrackingSpeed * Time.deltaTime);
         transform.LookAt(Player);
     }
+     
 }

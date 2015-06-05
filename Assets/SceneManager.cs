@@ -21,7 +21,6 @@ public class SceneManager : MonoBehaviour
         }
         catch (Exception)
         {
-            
             throw new Exception(String.Format("File {0}.sceneState not found", SceneName));
         }
     }
@@ -36,11 +35,11 @@ public class SceneManager : MonoBehaviour
             try
             {
                 Stream sceneFile = File.Open(SceneName + ".sceneState", FileMode.Open);
-                Debug.Log(String.Format("Existing file called \"{0}.sceneState\" found."));
+                Debug.Log(String.Format("Existing file called \"{0}.sceneState\" found.", SceneName));
             }
             catch
             {
-                Debug.Log(String.Format("Could not find file \"{0}.sceneState\", creating..."));
+                Debug.Log(String.Format("Could not find file \"{0}.sceneState\", creating...", SceneName));
                 //Debug.Log(String.Format("Creating file\"{0}.sceneState\"."));
                 //Stream sceneFile = File.Open(SceneName + ".sceneState", FileMode.Create);
                 //Debug.Log(String.Format("File \"{0}.sceneState\" created."));

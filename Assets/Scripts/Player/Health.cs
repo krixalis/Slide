@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Runtime.InteropServices;
+using UnityEngine;
 
 public class Health : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class Health : MonoBehaviour
     public float _elapsedInvincibility;
     private bool  _isInvincible;
     public float _timer;
+    public CameraShake _cameraShake;
 
     // Use this for initialization
     private void Start()
@@ -17,8 +19,10 @@ public class Health : MonoBehaviour
         _maxHealth = 3f; // 3 health for now, insta-death with insta-respawns instead?
         _currentHealth = _maxHealth;
 
-        _invincibilityTime = 1.2f; // 3 Seconds of invincibility for now
+        _invincibilityTime = 1.2f; // 1.2 Seconds of invincibility for now
         _elapsedInvincibility = 0f;
+
+        _cameraShake = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraShake>();
     }
 
     private void OnTriggerEnter(Collider otherCollider)
@@ -28,6 +32,7 @@ public class Health : MonoBehaviour
         if (otherCollider.gameObject.tag == "Enemy" || otherCollider.gameObject.tag == "Trap")
         {
             _currentHealth -= 1f;
+            _cameraShake.Shake(1f, 0.5f, 0.05f);
             GoInvincible();
         }
         
@@ -38,18 +43,18 @@ public class Health : MonoBehaviour
         if (isDead())
         {
             Destroy(transform.root.gameObject);
-            transform.root.gameObject.renderer.material.color = Color.red;
+            transform.root.gameObject.GetComponent<Renderer>().material.color = Color.red;
         }
 
         UpdateInvincibility();
 
-        if (_isInvincible && transform.root.gameObject.renderer.material.color != Color.yellow)
+        if (_isInvincible && transform.root.gameObject.GetComponent<Renderer>().material.color != Color.yellow)
         {
-            transform.root.gameObject.renderer.material.color = Color.yellow; // Debug way of showing invincibility duration
+            transform.root.gameObject.GetComponent<Renderer>().material.color = Color.yellow; // Debug way of showing invincibility duration
         }
-        else if (!_isInvincible && transform.root.gameObject.renderer.material.color == Color.yellow)
+        else if (!_isInvincible && transform.root.gameObject.GetComponent<Renderer>().material.color == Color.yellow)
         {
-            transform.root.gameObject.renderer.material.color = Color.white;
+            transform.root.gameObject.GetComponent<Renderer>().material.color = Color.white;
         }
     }
 

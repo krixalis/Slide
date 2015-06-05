@@ -24,17 +24,17 @@ public class ToggleWall : MonoBehaviour
     {
         if (_locked) return;
 
-        if (WallUp && !animation["Retract"].enabled && !animation["Extend"].enabled)
+        if (WallUp && !GetComponent<Animation>()["Retract"].enabled && !GetComponent<Animation>()["Extend"].enabled)
         {
-            animation["Retract"].speed = 2;
-            animation.Play("Retract");
+            GetComponent<Animation>()["Retract"].speed = 2;
+            GetComponent<Animation>().Play("Retract");
             WallUp = false;
             _triggered = false;
         }
-        else if (!WallUp && !animation["Retract"].enabled && !animation["Extend"].enabled)
+        else if (!WallUp && !GetComponent<Animation>()["Retract"].enabled && !GetComponent<Animation>()["Extend"].enabled)
         {
-            animation["Extend"].speed = 2;
-            animation.Play("Extend");
+            GetComponent<Animation>()["Extend"].speed = 2;
+            GetComponent<Animation>().Play("Extend");
             WallUp = true;
             _triggered = false;
         }

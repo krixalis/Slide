@@ -45,25 +45,25 @@ public class DoorTrigger : MonoBehaviour
     
     private void OpenDoor()
     {
-        animation["Open"].speed = 1f;
-        animation.Play("Open");
+        GetComponent<Animation>()["Open"].speed = 1f;
+        GetComponent<Animation>().Play("Open");
 
         IsDoorOpen = true;
     }
     
     private void CloseDoor()
     {
-        animation["Open"].speed = -1f;
-        animation.Play("Open");
+        GetComponent<Animation>()["Open"].speed = -1f;
+        GetComponent<Animation>().Play("Open");
     
         IsDoorOpen = false;
     }
 
     private void DisablePlayer()
     {
-        _player.rigidbody.useGravity = false;
+        _player.GetComponent<Rigidbody>().useGravity = false;
         _playerCharControl.AllowControl = false;
-        _player.transform.rigidbody.velocity = new Vector3(0, 0, 0);
+        _player.transform.GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
         _playerIsDisabled = true;
     }
     

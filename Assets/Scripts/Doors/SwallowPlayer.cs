@@ -48,7 +48,7 @@ public class SwallowPlayer : MonoBehaviour
         if (!IsExit) return;
         if (_player != null && DoorTrigger.DoorType == "Exit" && IsPulling)
         {
-            _player.rigidbody.constraints = RigidbodyConstraints.None;
+            _player.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
             if(!_playerIsDisabled) DisablePlayer();
             PullPlayer();
         }
@@ -56,15 +56,15 @@ public class SwallowPlayer : MonoBehaviour
 
     private void DisablePlayer()
     {
-        _player.rigidbody.useGravity = false;
+        _player.GetComponent<Rigidbody>().useGravity = false;
         _playerCharControl.AllowControl = false;
-        _player.transform.rigidbody.velocity = new Vector3(0, 0, 0);
+        _player.transform.GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
         _playerIsDisabled = true;
     }
 
     private void PullPlayer()
     {
-        GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraFollow>().isDisabled = true;
+        GameObject.FindGameObjectWithTag("CameraParent").GetComponent<CameraFollow>().IsDisabled = true;
         _player.transform.position = Vector3.Lerp(_player.transform.position, TargetPosBehindDoor, PullSpeed * Time.deltaTime);
 
         if (!string.IsNullOrEmpty(SceneName)) Application.LoadLevel(SceneName);

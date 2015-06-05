@@ -33,13 +33,13 @@ public class SpikeTrigger : MonoBehaviour
 
         if (IsIdling())
         {
-            Spikes.collider.enabled = false; //do not damage the player unless active
+            Spikes.GetComponent<Collider>().enabled = false; //do not damage the player unless active
         }
     }
 
     private void ActivateSpikes()
     {
-        animation.Play("SpikesTrigger");
+        GetComponent<Animation>().Play("SpikesTrigger");
 
         _spikesUp = true;
         _triggerSpikes = false;
@@ -47,17 +47,17 @@ public class SpikeTrigger : MonoBehaviour
 
     private void RevertSpikes()
     {
-        animation.PlayQueued("SpikesRevert");
+        GetComponent<Animation>().PlayQueued("SpikesRevert");
 
         _spikesUp = false;
         _triggerRevert = false;
 
-        Spikes.collider.enabled = true; // this trap is to punish the player for mindlessly changing direction on a spike platform
+        Spikes.GetComponent<Collider>().enabled = true; // this trap is to punish the player for mindlessly changing direction on a spike platform
     }
 
     private bool IsIdling()
     {
-        return !_spikesUp && !animation["SpikesRevert"].enabled && !animation["SpikesTrigger"].enabled;
+        return !_spikesUp && !GetComponent<Animation>()["SpikesRevert"].enabled && !GetComponent<Animation>()["SpikesTrigger"].enabled;
     }
 
     private void OnTriggerEnter(Collider otherCollider)

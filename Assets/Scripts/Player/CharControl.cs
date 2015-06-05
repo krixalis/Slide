@@ -56,7 +56,7 @@ namespace Assets.Scripts.Player
 
             if (AllowControl == false)
             {
-                transform.rigidbody.velocity = new Vector3(0, 0, 0);
+                transform.GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
                 return;
             }
             AllowChangeDirection = true;
@@ -64,7 +64,7 @@ namespace Assets.Scripts.Player
 
             HandleDirectionPowerups();
 
-            HandleJumpPowerups(); //TODO: Handle Powerups
+            HandleJumpPowerups();
             /*
             Debug.Log("Fire1: " + Input.GetButton("Fire1"));
             Debug.Log("Jump: " + Input.GetButton("Jump"));
@@ -147,12 +147,12 @@ namespace Assets.Scripts.Player
 
         private void HandleVelocity()
         {
-            rigidbody.velocity += new Vector3(MoveDir * Acceleration, 0, 0);
+            GetComponent<Rigidbody>().velocity += new Vector3(MoveDir * Acceleration, 0, 0);
             // _moveDir is the sign whether to accelerate to the right or left.
 
-            Velocity = rigidbody.velocity;
+            Velocity = GetComponent<Rigidbody>().velocity;
             Velocity.x = Mathf.Clamp(Velocity.x, -MaxSpeed, MaxSpeed);
-            rigidbody.velocity = Velocity;
+            GetComponent<Rigidbody>().velocity = Velocity;
         }
 
         public void Jump()
@@ -163,7 +163,7 @@ namespace Assets.Scripts.Player
                 CurrentJumpForce = JumpForce;
                 return;
             }
-            rigidbody.velocity += new Vector3(0, CurrentJumpForce, 0);
+            GetComponent<Rigidbody>().velocity += new Vector3(0, CurrentJumpForce, 0);
             CurrentJumpForce -= JumpForce / 6.66f; // TODO: Make this not shit.
         }
 
@@ -189,7 +189,7 @@ namespace Assets.Scripts.Player
 
         private void OnCollisionStay(Collision collisionInfo)
         {
-            Velocity = rigidbody.velocity;
+            Velocity = GetComponent<Rigidbody>().velocity;
             foreach (ContactPoint contact in collisionInfo.contacts)
             {
                 float normalY = Math.Abs(contact.normal.y); // Absolute vaue because our margin of "error" is -0.1 to +0.1 in the following if-statement. This gets rid of a redundant negative check.
@@ -243,7 +243,7 @@ namespace Assets.Scripts.Player
                         Jumping = false;
                         CurrentJumpForce = JumpForce; //reset jump to prevent otherwise possible walljump+jump overlap, which results in an undesired super-jump
 
-                        rigidbody.velocity += new Vector3(0, JumpForce * _boostForce, 0);
+                        GetComponent<Rigidbody>().velocity += new Vector3(0, JumpForce * _boostForce, 0);
                         _allowWallJump = false;
                         _wallJumpOccured = true;
                     }

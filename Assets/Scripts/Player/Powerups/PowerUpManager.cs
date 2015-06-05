@@ -13,11 +13,11 @@ namespace Assets.Scripts.Player.Powerups
             switch (pUpName)
             {
                 case "DoubleJumpPowerup":
-                    DoubleJump doubleJump = new DoubleJump();
+                    var doubleJump = new DoubleJump();
                     ActivePowerups.Add(doubleJump);
                     break;
                 case "MidairPowerup":
-                    MidairDirectionPowerup midair = new MidairDirectionPowerup();
+                    var midair = new MidairDirectionPowerup();
                     ActivePowerups.Add(midair);
                     break;
                 default:
