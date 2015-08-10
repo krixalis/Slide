@@ -11,6 +11,11 @@ public class SwallowPlayer : MonoBehaviour
     public GameObject TargetPointBehindDoor;
     public Vector3 TargetPosBehindDoor;
 
+    private float _startTime;
+    private float _fracDistance;
+    private float _distance;
+    public float DistanceCovered;
+
     public float PullSpeed;
     public bool IsPulling;
 
@@ -23,7 +28,7 @@ public class SwallowPlayer : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
-	    if(PullSpeed == 0f) PullSpeed = 12.0f;
+	    if(PullSpeed == 0f) PullSpeed = 18.0f;
 
 	    IsPulling = false;
 
@@ -46,6 +51,10 @@ public class SwallowPlayer : MonoBehaviour
     void FixedUpdate ()
     {
         if (!IsExit) return;
+
+        DistanceCovered = (Time.time - _startTime) * PullSpeed;
+        _fracDistance = DistanceCovered / _distance;
+
         if (_player != null && DoorTrigger.DoorType == "Exit" && IsPulling)
         {
             _player.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
@@ -64,10 +73,11 @@ public class SwallowPlayer : MonoBehaviour
 
     private void PullPlayer()
     {
-        GameObject.FindGameObjectWithTag("CameraParent").GetComponent<CameraFollow>().IsDisabled = true;
-        _player.transform.position = Vector3.Lerp(_player.transform.position, TargetPosBehindDoor, PullSpeed * Time.deltaTime);
+        GameObject.FindGameObjectWithTag("CameraParent").GetComponent<CameraFollow>().IsDisabled = true; //TODO: Need to center camera on door
+        _player.transform.position = Vector3.Lerp(_player.transform.position, TargetPosBehindDoor, _fracDistance);
+        Debug.Log("pullin him in lads");
 
-        if (!string.IsNullOrEmpty(SceneName)) Application.LoadLevel(SceneName);
+        if (!string.IsNullOrEmpty(SceneName)) Application.LoadLevel(SceneName); //TODO: actually only load the next scene/position when the player reached the target point
         else
         {
             Debug.Log("Failed to load scene: String is null or empty.");
@@ -83,6 +93,9 @@ public class SwallowPlayer : MonoBehaviour
                 _player = otherCollider.gameObject;
                 _playerCharControl = _player.GetComponent<CharControl>();
             }
+            _startTime = Time.time;
+            _distance = Vector3.Distance(_player.transform.position, TargetPosBehindDoor);
+
             IsPulling = true;
             DoorTrigger.IsPulling = false;
         }

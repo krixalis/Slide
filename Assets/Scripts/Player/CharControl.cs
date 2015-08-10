@@ -82,7 +82,6 @@ namespace Assets.Scripts.Player
             }
 
 
-
             HandleVelocity(); //TODO: Handle Powerups
             IsGrounded = false; //reset IsGrounded
         }

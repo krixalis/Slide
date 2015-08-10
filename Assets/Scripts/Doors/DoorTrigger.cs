@@ -5,6 +5,11 @@ public class DoorTrigger : MonoBehaviour
 {
     public string DoorType;
     public bool IsDoorOpen;
+
+    private float _startTime;
+    private float _fracDistance;
+    private float _distance;
+    public float DistanceCovered;
     public float PullSpeed;
     public bool IsPulling;
 
@@ -18,7 +23,7 @@ public class DoorTrigger : MonoBehaviour
     // Use this for initialization
     void Start ()
     {
-        if(PullSpeed == 0f) PullSpeed = 2.0f;
+        if(PullSpeed == 0f) PullSpeed = 3.5f;
         
         TargetPoint = transform.FindChild("TargetPoint").gameObject;
         TargetPos = TargetPoint.transform.position;
@@ -35,6 +40,9 @@ public class DoorTrigger : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate () 
     {
+        DistanceCovered = (Time.time - _startTime) * PullSpeed;
+        _fracDistance = DistanceCovered / _distance;
+
         if (_player != null && DoorType == "Exit" && IsPulling)
         {
             if (!_playerIsDisabled) DisablePlayer();
@@ -69,7 +77,7 @@ public class DoorTrigger : MonoBehaviour
     
     private void PullPlayer()
     {
-        _player.transform.position = Vector3.Lerp(_player.transform.position, TargetPos, PullSpeed * Time.deltaTime);
+        _player.transform.position = Vector3.Lerp(_player.transform.position, TargetPos, _fracDistance);
     }
     
     private void OnTriggerEnter(Collider otherCollider)
@@ -81,6 +89,10 @@ public class DoorTrigger : MonoBehaviour
                 _player = otherCollider.gameObject;
                 _playerCharControl = _player.GetComponent<CharControl>();
             }
+
+            _startTime = Time.time;
+            _distance = Vector3.Distance(_player.transform.position, TargetPos);
+
             switch (DoorType)
             {
                 case "Exit":
