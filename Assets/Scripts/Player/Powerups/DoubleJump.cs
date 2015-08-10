@@ -12,7 +12,7 @@ public class DoubleJump : Powerup, IJumpPowerup
     {
         if (_charctrl == null) _charctrl = charctrl;
 
-        if (_charctrl.JumpDesired && _charctrl.JumpCount < 1) // 1 because the JumpCount becomes 2
+        if (_charctrl.JumpDesired && _charctrl.JumpCount == 0) // 1 because the JumpCount becomes 2
         {
             _charctrl.JumpDesired = false;
             _charctrl.Jumping = true;

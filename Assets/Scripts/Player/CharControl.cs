@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.Remoting.Contexts;
 using UnityEngine;
 using Assets.Scripts.Player.Powerups;
 
@@ -49,7 +50,7 @@ namespace Assets.Scripts.Player
 
         private void Update()
         {
-            
+
             if (!JumpDesired) JumpDesired = Input.GetButtonDown("Jump");
             //This effectively queues up a jump.
             //Using an Input-Axis would make things overly complicated.
@@ -75,10 +76,15 @@ namespace Assets.Scripts.Player
         // FixedUpdate is called once per tick.
         private void FixedUpdate()
         {
-            IsGrounded = OnGround();
-            if (IsGrounded) JumpCount = 0;
+            if (IsGrounded && JumpCount != 0)
+            {
+                JumpCount = 0;
+            }
+
+
 
             HandleVelocity(); //TODO: Handle Powerups
+            IsGrounded = false; //reset IsGrounded
         }
 
         public void HandleDirectionPowerups()
@@ -147,7 +153,7 @@ namespace Assets.Scripts.Player
 
         private void HandleVelocity()
         {
-            GetComponent<Rigidbody>().velocity += new Vector3(MoveDir * Acceleration, 0, 0);
+            GetComponent<Rigidbody>().velocity += new Vector3(MoveDir*Acceleration, 0, 0);
             // _moveDir is the sign whether to accelerate to the right or left.
 
             Velocity = GetComponent<Rigidbody>().velocity;
@@ -164,7 +170,7 @@ namespace Assets.Scripts.Player
                 return;
             }
             GetComponent<Rigidbody>().velocity += new Vector3(0, CurrentJumpForce, 0);
-            CurrentJumpForce -= JumpForce / 6.66f; // TODO: Make this not shit.
+            CurrentJumpForce -= JumpForce/6.66f; // TODO: Make this not shit.
         }
 
         public void ChangeDirection()
@@ -177,10 +183,12 @@ namespace Assets.Scripts.Player
             AllowChangeDirection = false;
         }
 
+        /*
         private bool OnGround()
         {
             return Velocity.y == 0f; // I should probably find a way to get rid of this, seems pretty silly.
         }
+         */
 
         public bool IsFalling()
         {
@@ -192,23 +200,24 @@ namespace Assets.Scripts.Player
             Velocity = GetComponent<Rigidbody>().velocity;
             foreach (ContactPoint contact in collisionInfo.contacts)
             {
-                float normalY = Math.Abs(contact.normal.y); // Absolute vaue because our margin of "error" is -0.1 to +0.1 in the following if-statement. This gets rid of a redundant negative check.
+                float normalY = contact.normal.y;
                 float desY = 1.0f;
 
-                if(normalY - desY <= 0.1f) //(contact.normal == Vector3.up)
+                if (Mathf.Approximately(contact.normal.y, 1))
                 {
-                    Velocity.y = 0;
                     IsGrounded = true;
                     break;
                 }
+
                 bool pls = contact.normal == Vector3.up;
-                Debug.Log("isGrounded now false. " + "if: " + pls + ". contact.normal" + contact.normal + " == Vector3.up" + Vector3.up);
+                Debug.Log("isGrounded now false. " + "if: " + pls + ". contact.normal" + contact.normal +
+                          " == Vector3.up" + Vector3.up);
                 IsGrounded = false;
             }
         }
 
         private void OnCollisionEnter(Collision collisionInfo)
-        // TODO: When moving toward the edge on a flat surface right after landing on it, the player will switch direction. Why is that? +++ Not sure if this is still true, hard to replicate
+            // TODO: When moving toward the edge on a flat surface right after landing on it, the player will switch direction. Why is that? +++ Not sure if this is still true, hard to replicate
         {
             if (IsFalling())
             {
@@ -219,31 +228,27 @@ namespace Assets.Scripts.Player
                 _allowWallJump = true;
             }
 
+
+
             foreach (ContactPoint contact in collisionInfo.contacts)
             {
                 float normalX = Math.Abs(contact.normal.x);
                 float normalY = Math.Abs(contact.normal.y);
                 float des = 1.0f;
-              /*
-                if (contact.otherCollider.tag == "Level") //probably useless
-                {
-                    if (contact.normal == Vector3.up)
-                    {
-                        IsGrounded = true;
-                    }
-                }
-              */
 
-                if (normalX - des <= 0.1f && normalY - des <= -0.25f)//(contact.normal.x != 0 && contact.normal != Vector3.up && contact.normal != Vector3.down)
+
+                if (normalX - des <= 0.1f && normalY - des <= -0.25f)
+                    //(contact.normal.x != 0 && contact.normal != Vector3.up && contact.normal != Vector3.down)
                 {
                     //Debug.Log("normalY: " + normalY);
                     ChangeDirection();
                     if (Input.GetAxis("Jump") == 1 && _allowWallJump)
                     {
                         Jumping = false;
-                        CurrentJumpForce = JumpForce; //reset jump to prevent otherwise possible walljump+jump overlap, which results in an undesired super-jump
+                        CurrentJumpForce = JumpForce;
+                            //reset jump to prevent otherwise possible walljump+jump overlap, which results in an undesired super-jump
 
-                        GetComponent<Rigidbody>().velocity += new Vector3(0, JumpForce * _boostForce, 0);
+                        GetComponent<Rigidbody>().velocity += new Vector3(0, JumpForce*_boostForce, 0);
                         _allowWallJump = false;
                         _wallJumpOccured = true;
                     }
