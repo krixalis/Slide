@@ -25,7 +25,7 @@ public class DoubleJump : Powerup, IJumpPowerup
             _charctrl.JumpCount += 1;
         }
 
-        if (charctrl.Jumping) Jump();
+        if (_charctrl.Jumping) Jump();
     }
 
     private void Jump()

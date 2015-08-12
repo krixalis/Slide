@@ -50,8 +50,7 @@ namespace Assets.Scripts.Player
 
         private void Update()
         {
-
-            if (!JumpDesired) JumpDesired = Input.GetButtonDown("Jump");
+            JumpDesired = Input.GetButtonDown("Jump");
             //This effectively queues up a jump.
             //Using an Input-Axis would make things overly complicated.
 
