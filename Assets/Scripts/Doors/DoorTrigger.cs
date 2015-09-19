@@ -28,10 +28,9 @@ public class DoorTrigger : MonoBehaviour
         TargetPoint = transform.FindChild("TargetPoint").gameObject;
         TargetPos = TargetPoint.transform.position;
         
-    
         if (DoorType == "")
         {
-            Debug.Log("Did not set DoorType!");
+            Debug.Log("Did not set DoorType! Setting as Exit.");
             DoorType = "Exit";
             IsDoorOpen = false;
         }
@@ -69,10 +68,12 @@ public class DoorTrigger : MonoBehaviour
 
     private void DisablePlayer()
     {
+        /*
         _player.GetComponent<Rigidbody>().useGravity = false;
         _playerCharControl.AllowControl = false;
         _player.transform.GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
         _playerIsDisabled = true;
+         */
     }
     
     private void PullPlayer()

@@ -24,6 +24,7 @@ public class SwallowPlayer : MonoBehaviour
     private bool _playerIsDisabled;
 
     public string SceneName;
+    public GameObject DestinationDoor;
     
 	// Use this for initialization
 	void Start ()
@@ -57,31 +58,38 @@ public class SwallowPlayer : MonoBehaviour
 
         if (_player != null && DoorTrigger.DoorType == "Exit" && IsPulling)
         {
-            _player.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
-            if(!_playerIsDisabled) DisablePlayer();
+            //_player.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
+            //if(!_playerIsDisabled) DisablePlayer();
             PullPlayer();
         }
     }
 
     private void DisablePlayer()
     {
+        /*
         _player.GetComponent<Rigidbody>().useGravity = false;
         _playerCharControl.AllowControl = false;
         _player.transform.GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
         _playerIsDisabled = true;
+         */
     }
 
     private void PullPlayer()
     {
-        GameObject.FindGameObjectWithTag("CameraParent").GetComponent<CameraFollow>().IsDisabled = true; //TODO: Need to center camera on door
-        _player.transform.position = Vector3.Lerp(_player.transform.position, TargetPosBehindDoor, _fracDistance);
+        //GameObject.FindGameObjectWithTag("CameraParent").GetComponent<CameraFollow>().IsDisabled = true; //TODO: Need to center camera on door
+        //_player.transform.position = Vector3.Lerp(_player.transform.position, TargetPosBehindDoor, _fracDistance);
         Debug.Log("pullin him in lads");
 
+        /*
         if (!string.IsNullOrEmpty(SceneName)) Application.LoadLevel(SceneName); //TODO: actually only load the next scene/position when the player reached the target point
         else
         {
             Debug.Log("Failed to load scene: String is null or empty.");
         }
+         */
+
+        _player.transform.position = DestinationDoor.transform.position;
+        IsPulling = false;
     }
 
     private void OnTriggerEnter(Collider otherCollider)
