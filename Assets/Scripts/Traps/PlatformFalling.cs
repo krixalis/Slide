@@ -18,7 +18,7 @@ public class PlatformFalling : MonoBehaviour
 	    if (StartFalling)
 	    {
 	        transform.root.GetComponent<Rigidbody>().isKinematic = false;
-            transform.root.GetComponent<Rigidbody>().AddForce(new Vector3(0f, 0f, -35f));
+            //transform.root.GetComponent<Rigidbody>().AddForce(new Vector3(0f, 0f, -35f));
 	        transform.root.GetComponent<BoxCollider>().enabled = false;
 	    }
 	}

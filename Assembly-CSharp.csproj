@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\AimWeapon.cs" />
+     <Compile Include="Assets\PlatformOneWay.cs" />
      <Compile Include="Assets\SceneManager.cs" />
      <Compile Include="Assets\Scripts\Camera\CameraFollow.cs" />
      <Compile Include="Assets\Scripts\Camera\CameraShake.cs" />
