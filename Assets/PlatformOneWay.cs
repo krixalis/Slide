@@ -1,31 +1,22 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class PlatformOneWay : MonoBehaviour
 {
-    public Transform PlayerTransform;
+    public GameObject Player;
     private float _playerFeetPosY;
+    public bool help;
 
 	// Use this for initialization
 	void Start ()
     {
-        Physics.IgnoreLayerCollision(8, 9, false);
-
-	    _playerFeetPosY = PlayerTransform.position.y - (PlayerTransform.localScale.y / 2);
+	    if (Player == null) Player = GameObject.FindWithTag("Player");
     }
 	
 	// Update is called once per frame
 	void FixedUpdate ()
     {
-        _playerFeetPosY = PlayerTransform.position.y - (PlayerTransform.localScale.y / 2);
-
-        if (transform.position.y <= _playerFeetPosY)
-	    {
-	        Physics.IgnoreLayerCollision(8, 9, false);
-	    }
-	    else
-	    {
-	        Physics.IgnoreLayerCollision(8, 9, true);
-	    }
+        _playerFeetPosY = Player.transform.position.y - (Player.transform.localScale.y / 2); //player position changes, therefore we need to update the feet position here
+	    
+	    Physics.IgnoreCollision(GetComponent<Collider>(), Player.GetComponent<Collider>(), transform.position.y > _playerFeetPosY);
     }
 }
