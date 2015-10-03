@@ -43,9 +43,8 @@ public class Health : MonoBehaviour
     {
         if (isDead())
         {
-            //Destroy(transform.root.gameObject); //Bad thing to do
-            transform.root.gameObject.GetComponent<MeshRenderer>().enabled = false;
-            transform.root.gameObject.GetComponent<CharControl>().enabled = false;
+            //Destroy(transform.root.gameObject); //Bad thing to do?
+            transform.root.gameObject.SetActive(false);
             transform.root.gameObject.GetComponent<Renderer>().material.color = Color.red;
         }
 
