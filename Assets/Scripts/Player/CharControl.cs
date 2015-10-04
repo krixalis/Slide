@@ -65,11 +65,6 @@ namespace Assets.Scripts.Player
             HandleDirectionPowerups();
 
             HandleJumpPowerups();
-            /*
-            Debug.Log("Fire1: " + Input.GetButton("Fire1"));
-            Debug.Log("Jump: " + Input.GetButton("Jump"));
-            Debug.Log("isGrounded: " + IsGrounded);
-             */
         }
 
         // FixedUpdate is called once per tick.
@@ -115,12 +110,6 @@ namespace Assets.Scripts.Player
 
         private void HandleDirection()
         {
-            /*
-            Debug.Log("Fire1: " + Input.GetAxis("Fire1") + 
-                "AllowUserChangeDir: " + AllowUserChangeDir + 
-                "isGrounded: " + IsGrounded);
-             */
-
             // Determine if the direction may be changed (if player is grounded).
             if (Input.GetAxis("Fire1") == 1 && AllowUserChangeDir && IsGrounded)
             {
@@ -180,14 +169,7 @@ namespace Assets.Scripts.Player
             AllowUserChangeDir = false;
             AllowChangeDirection = false;
         }
-
-        /*
-        private bool OnGround()
-        {
-            return Velocity.y == 0f; // I should probably find a way to get rid of this, seems pretty silly.
-        }
-         */
-
+        
         public bool IsFalling()
         {
             return Velocity.y < 0f;

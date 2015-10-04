@@ -13,7 +13,8 @@ public class PlatformOneWay : MonoBehaviour
 	
 	// Update is called once per frame
 	void FixedUpdate ()
-    {
+	{
+	    if (!Player.transform.root.gameObject.activeSelf) return;
         _playerFeetPosY = Player.transform.position.y - (Player.transform.localScale.y / 2); //player position changes, therefore we need to update the feet position here
 	    
 	    Physics.IgnoreCollision(GetComponent<Collider>(), Player.GetComponent<Collider>(), transform.position.y > _playerFeetPosY);
