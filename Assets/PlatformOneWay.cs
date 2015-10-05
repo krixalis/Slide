@@ -19,7 +19,7 @@ public class PlatformOneWay : MonoBehaviour
 	    
 	    Physics.IgnoreCollision(GetComponent<Collider>(), Player.GetComponent<Collider>(), transform.position.y > _playerFeetPosY);
         
-	    if (Input.GetAxis("Vertical") < 0)
+	    if (Input.GetAxis("Vertical") < 0 && Input.GetAxis("Fire2") == 1)
 	    {
 	        Physics.IgnoreCollision(GetComponent<Collider>(), Player.GetComponent<Collider>(), true);
 	    }

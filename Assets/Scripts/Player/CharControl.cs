@@ -11,19 +11,21 @@ namespace Assets.Scripts.Player
         private CharacterController _controller;
 
         public bool AllowControl;
+
         public float Acceleration;
         public float MaxSpeed;
         public float MoveDir;
         public bool IsGrounded;
+
         public bool AllowUserChangeDir;
         public bool AllowChangeDirection;
+
         public float JumpForce;
         public bool AllowJump;
         public bool Jumping;
         public int JumpCount;
         public float CurrentJumpForce;
         public bool JumpDesired;
-        public GameObject PowerUpDirection;
         public Vector3 Velocity;
 
         private float _boostForce;
@@ -130,7 +132,7 @@ namespace Assets.Scripts.Player
                 Jumping = true;
                 AllowJump = false;
             }
-            else if (Input.GetAxis("Jump") != 1 && !Jumping && IsGrounded && !AllowJump)
+            else if (Input.GetAxis("Jump") != 1 && !Jumping && IsGrounded)
             {
                 AllowJump = true;
             }
@@ -188,10 +190,6 @@ namespace Assets.Scripts.Player
                     IsGrounded = true;
                     break;
                 }
-
-                bool pls = contact.normal == Vector3.up;
-                Debug.Log("isGrounded now false. " + "if: " + pls + ". contact.normal" + contact.normal +
-                          " == Vector3.up" + Vector3.up);
                 IsGrounded = false;
             }
         }
