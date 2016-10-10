@@ -23,8 +23,9 @@ public class PlatformOneWay : MonoBehaviour
 	    if (!Player.transform.root.gameObject.activeSelf) return;
         _playerFeetPosY = Player.transform.position.y - (Player.transform.localScale.y / 2); // Player position changes, therefore we need to update the feet position here regularly
 
-        // Here I am using the platform's width as a buffer of determining whether to ignore collisions, because Unity showed some weird inaccuracies if you only compare the player's position to the top of the platform.
-	    if (_platformTopPosY <= _playerFeetPosY)
+        // Here I am using the platform's width as a buffer for determining whether to ignore collisions, because Unity showed some weird inaccuracies if you only compare the player's position to the top of the platform.
+        // This means, however, that dropping from the platform and moving back into it will still collide, so the player collides with the sides. Maybe I can find a way to fix this, else I'll have to design around this.
+	    if (_platformTopPosY < _playerFeetPosY)
 	    {
 	        Physics.IgnoreCollision(GetComponent<Collider>(), Player.GetComponent<Collider>(), false);
 	    }
@@ -34,7 +35,7 @@ public class PlatformOneWay : MonoBehaviour
         }
 
 
-	    if (Input.GetAxis("Vertical") < 0 && Input.GetAxis("Fire2") == 1)
+	    if (Input.GetAxis("Vertical") < 0 && Input.GetAxis("Fire2") == 1) // If I use Jump here, the jump itself takes priority. Probably have to check for Vertical Axis in the jump functions for this.
 	    {
 	        Physics.IgnoreCollision(GetComponent<Collider>(), Player.GetComponent<Collider>(), true);
 	    }
