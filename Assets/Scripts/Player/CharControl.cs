@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Runtime.Remoting.Contexts;
 using UnityEngine;
 using Assets.Scripts.Player.Powerups;
 
@@ -41,9 +40,9 @@ namespace Assets.Scripts.Player
             AllowUserChangeDir = true;
             MoveDir = 1; // = right, -1 = left
 
-            JumpForce = 8f; // Jump() specific.
+            JumpForce = 7f; // Jump() specific.
             CurrentJumpForce = JumpForce; // ^
-            _boostForce = 2.25f; // ^
+            _boostForce = 18f; // ^
 
             AllowChangeDirection = true;
             AllowJump = true;
@@ -52,30 +51,27 @@ namespace Assets.Scripts.Player
 
         private void Update()
         {
-            JumpDesired = Input.GetButtonDown("Jump");
+            //placeholder
+        }
+
+        // FixedUpdate is called once per tick.
+        private void FixedUpdate()
+        {
+            JumpDesired = Input.GetButton("Jump");
             //This effectively queues up a jump.
             //Using an Input-Axis would make things overly complicated.
+
+            if (-MaxSpeed*0.9 > Velocity.x || Velocity.x > MaxSpeed*0.9) AllowChangeDirection = true; //Buffer for how quickly a user can switch directions. This also prevents them from being able to get stuck on walls. TODO: This should probably instead be prevented by implementing a timed buffer where direction may not be changed?
 
             if (AllowControl == false)
             {
                 transform.GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
                 return;
             }
-            AllowChangeDirection = true;
-            _wallJumpOccured = false;
+            _wallJumpOccured = false; //reset every tick (why tho?)
 
             HandleDirectionPowerups();
-
             HandleJumpPowerups();
-        }
-
-        // FixedUpdate is called once per tick.
-        private void FixedUpdate()
-        {
-            if (IsGrounded && JumpCount != 0)
-            {
-                JumpCount = 0;
-            }
 
 
             HandleVelocity(); //TODO: Handle Powerups
@@ -98,8 +94,13 @@ namespace Assets.Scripts.Player
 
         public void HandleJumpPowerups()
         {
-            var jumpPowerup = PowerUpManager.ActivePowerups.OfType<IJumpPowerup>().FirstOrDefault();
+            if (IsGrounded && JumpCount != 0)
+            {
+                JumpCount = 0;
+            }
 
+            var jumpPowerup = PowerUpManager.ActivePowerups.OfType<IJumpPowerup>().FirstOrDefault();
+            
             if (jumpPowerup != null)
             {
                 jumpPowerup.HandleJump(this);
@@ -127,19 +128,20 @@ namespace Assets.Scripts.Player
         private void HandleJump()
         {
             // Determine if the player may jump (or is already jumping/isn't grounded).
-            if (Input.GetAxis("Jump") == 1 && !Jumping && IsGrounded && AllowJump)
+            if (JumpDesired && IsGrounded && AllowJump)
             {
                 Jumping = true;
                 AllowJump = false;
             }
-            else if (Input.GetAxis("Jump") != 1 && !Jumping && IsGrounded)
+
+            if (Jumping)
             {
-                AllowJump = true;
+                Jump();
+                Debug.Log("Jumping");
             }
-
-            if (Jumping) Jump();
+            if (!JumpDesired) AllowJump = true;
         }
-
+        
         private void HandleVelocity()
         {
             GetComponent<Rigidbody>().velocity += new Vector3(MoveDir*Acceleration, 0, 0);
@@ -152,25 +154,27 @@ namespace Assets.Scripts.Player
 
         public void Jump()
         {
-            if ((Input.GetAxis("Jump") == 0 || CurrentJumpForce <= 1.2f) && Jumping)
+            if ((!JumpDesired || CurrentJumpForce <= 0.6f) && Jumping)
             {
                 Jumping = false;
                 CurrentJumpForce = JumpForce;
                 return;
             }
             GetComponent<Rigidbody>().velocity += new Vector3(0, CurrentJumpForce, 0);
-            CurrentJumpForce -= JumpForce/6.66f; // TODO: Make this not shit.
+            CurrentJumpForce -= JumpForce*0.12f; // TODO: Make this not shit.
         }
 
         public void ChangeDirection()
         {
             if (AllowChangeDirection)
             {
+                GetComponent<Rigidbody>().velocity = new Vector3(0, GetComponent<Rigidbody>().velocity.y, 0); //makes it much snapper
                 MoveDir *= -1; // direction switch
             }
             AllowUserChangeDir = false;
             AllowChangeDirection = false;
         }
+        
         
         public bool IsFalling()
         {
@@ -182,10 +186,7 @@ namespace Assets.Scripts.Player
             Velocity = GetComponent<Rigidbody>().velocity;
             foreach (ContactPoint contact in collisionInfo.contacts)
             {
-                float normalY = contact.normal.y;
-                float desY = 1.0f;
-
-                if (Mathf.Approximately(contact.normal.y, 1))
+                if (0.75f <= contact.normal.y && contact.normal.y <= 1.25f) //boilerplate code to support slopes
                 {
                     IsGrounded = true;
                     break;
@@ -218,15 +219,14 @@ namespace Assets.Scripts.Player
                 if (normalX - des <= 0.1f && normalY - des <= -0.25f)
                     //(contact.normal.x != 0 && contact.normal != Vector3.up && contact.normal != Vector3.down)
                 {
-                    //Debug.Log("normalY: " + normalY);
                     ChangeDirection();
-                    if (Input.GetAxis("Jump") == 1 && _allowWallJump)
+                    AllowChangeDirection = false;
+                    if (JumpDesired && _allowWallJump)
                     {
                         Jumping = false;
-                        CurrentJumpForce = JumpForce;
-                            //reset jump to prevent otherwise possible walljump+jump overlap, which results in an undesired super-jump
 
-                        GetComponent<Rigidbody>().velocity += new Vector3(0, JumpForce*_boostForce, 0);
+                        GetComponent<Rigidbody>().velocity += new Vector3(0, _boostForce, 0);
+
                         _allowWallJump = false;
                         _wallJumpOccured = true;
                     }
