@@ -2,6 +2,7 @@
 using System.Linq;
 using UnityEngine;
 using Assets.Scripts.Player.Powerups;
+using Assets.Scripts.Weapons;
 
 namespace Assets.Scripts.Player
 {
@@ -13,7 +14,7 @@ namespace Assets.Scripts.Player
 
         public float Acceleration;
         public float MaxSpeed;
-        public float MoveDir;
+        public int MoveDir;
         public bool IsGrounded;
 
         public bool AllowUserChangeDir;
@@ -31,6 +32,8 @@ namespace Assets.Scripts.Player
         private bool _allowWallJump;
         private bool _wallJumpOccured;
 
+        //weapon testing
+        private IWeapon _blasterTest;
         private void Start()
         {
             JumpDesired = false;
@@ -47,11 +50,19 @@ namespace Assets.Scripts.Player
             AllowChangeDirection = true;
             AllowJump = true;
             _allowWallJump = true;
+
+
+
+            //weapon testing
+            WeaponManager.Evaluate("Blaster");
+            _blasterTest = WeaponManager.ActiveWeapons.OfType<IWeapon>().FirstOrDefault();
+            _blasterTest.Initialize();
         }
 
         private void Update()
         {
             //placeholder
+            if(Input.GetButton("Fire2")) _blasterTest.Fire();
         }
 
         // FixedUpdate is called once per tick.

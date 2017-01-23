@@ -2,9 +2,6 @@
 using UnityEngine;
 
 public class ReceivePowerup : MonoBehaviour {
-    private void Start()
-    {
-    }
 
     private void OnTriggerEnter(Collider otherCollider)
     {
