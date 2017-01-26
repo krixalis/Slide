@@ -12,9 +12,9 @@ public class DoubleJump : Powerup, IJumpPowerup
     {
         if (_charctrl == null) _charctrl = charctrl;
 
-        if (_charctrl.JumpDesired && _charctrl.JumpCount < 1 && _allowJump) // 1 because the JumpCount becomes 2
+        if (_charctrl.IsJumpDesired && _charctrl.JumpCount < 1 && _allowJump) // 1 because the JumpCount becomes 2
         {
-            _charctrl.Jumping = true;
+            _charctrl.IsJumping = true;
             _charctrl.CurrentJumpForce = _charctrl.JumpForce;
             
             var curVel = _charctrl.GetComponent<Rigidbody>().velocity;
@@ -24,8 +24,8 @@ public class DoubleJump : Powerup, IJumpPowerup
             _charctrl.JumpCount += 1;
         }
 
-        if (_charctrl.Jumping) _charctrl.Jump();
+        if (_charctrl.IsJumping) _charctrl.Jump();
 
-        _allowJump = _charctrl.JumpDesired == false;
+        _allowJump = _charctrl.IsJumpDesired == false;
     }
 }

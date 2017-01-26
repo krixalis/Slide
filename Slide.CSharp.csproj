@@ -97,6 +97,7 @@
     <Compile Include="Assets\Scripts\Walls\ToggleWall.cs" />
     <Compile Include="Assets\Scripts\Walls\WallTrigger.cs" />
     <Compile Include="Assets\Scripts\Weapons\Ammo\PelletBehaviour.cs" />
+    <Compile Include="Assets\Scripts\Weapons\BlasterBehaviour.cs" />
     <Compile Include="Assets\Scripts\Weapons\BlasterWeapon.cs" />
     <Compile Include="Assets\Scripts\Weapons\IWeapon.cs" />
   </ItemGroup>

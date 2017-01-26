@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Assets.Scripts.Weapons
 {
     
-    public class WeaponManager
+    public class WeaponManager : MonoBehaviour
     {
         public static List<Weapon> ActiveWeapons= new List<Weapon>();
         public static List<Weapon> ActiveLeftWeapons = new List<Weapon>(); //3? active 
@@ -26,6 +26,11 @@ namespace Assets.Scripts.Weapons
                     Debug.Log("Invalid weapon name");
                     break;
             }
+        }
+
+        void FixedUpdate()
+        {
+            //put this here to aim weapons later down the line
         }
         
         public static void FireLeftWeapon()
@@ -68,6 +73,7 @@ namespace Assets.Scripts.Weapons
             }
         }
     }
+    
 
     public class Weapon
     {
