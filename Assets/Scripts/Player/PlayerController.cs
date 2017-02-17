@@ -1,22 +1,23 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using UnityEngine;
 using Assets.Scripts.Player.Powerups;
 using Assets.Scripts.Weapons;
 
 namespace Assets.Scripts.Player
 {
-    public class CharControl : MonoBehaviour
+    public class PlayerController : MonoBehaviour
     {
         public bool AllowControl;
         public Vector3 Velocity;
-
-        private Rigidbody _rigidbody;
+        
         //weapon testing
         private IWeapon _blasterTest;
+        private CharacterController _charCtrlr;
+
         private void Start()
         {
-            _rigidbody = GetComponent<Rigidbody>();
+            _movCtrl = GetComponent<MovementController>();
+            
             IsJumpDesired = false;
             JumpCount = 0;
             AllowControl = true;
@@ -24,9 +25,9 @@ namespace Assets.Scripts.Player
             AllowUserChangeDir = true;
             MoveDir = 1; // = right, -1 = left
             
-            JumpForce = 7f; // Jump() specific.
+            JumpForce = 0.175f; // Jump() specific.
             CurrentJumpForce = JumpForce; // ^
-            _wallJumpForce = 7f; // ^
+            _wallJumpForce = 0.175f; // ^
 
             AllowChangeDirection = true;
             _allowWallJump = true;
@@ -34,6 +35,9 @@ namespace Assets.Scripts.Player
             //weapon testing
             WeaponManager.Evaluate("Blaster");
             _blasterTest = WeaponManager.ActiveWeapons.OfType<IWeapon>().FirstOrDefault();
+
+
+            _charCtrlr = GetComponent<CharacterController>();
         }
 
         private void Update()
@@ -46,17 +50,15 @@ namespace Assets.Scripts.Player
 
             ChangeDirectionDesired = Input.GetButton("Fire1");
         }
-
+        
         // FixedUpdate is called once per tick.
         private void FixedUpdate()
         {
-            
-
-            if (-MaxSpeed*0.9 > Velocity.x || Velocity.x > MaxSpeed*0.9) AllowChangeDirection = true; //Buffer for how quickly a user can switch directions. This also prevents them from being able to get stuck on walls. TODO: This should probably instead be prevented by implementing a timed buffer where direction may not be changed?
-
+            //if (-MaxSpeed*0.9 > Velocity.x || Velocity.x > MaxSpeed*0.9) AllowChangeDirection = true; //Buffer for how quickly a user can switch directions. This also prevents them from being able to get stuck on walls. TODO: This should probably instead be prevented by implementing a timed buffer where direction may not be changed?
+            AllowChangeDirection = true;
             if (AllowControl == false)
             {
-                _rigidbody.velocity = new Vector3(0, 0, 0);
+                _movCtrl.Velocity = Vector3.zero;
                 return;
             }
 
@@ -65,7 +67,7 @@ namespace Assets.Scripts.Player
 
             HandleWallJump();
             HandleMovement(); //TODO: Handle Powerups
-            IsGrounded = false; //reset IsGrounded
+            _movCtrl.ApplyGravity = !_charCtrlr.isGrounded;
         }
 
 
@@ -82,7 +84,7 @@ namespace Assets.Scripts.Player
 
         public void HandleJumpPowerups()
         {
-            if (IsGrounded && JumpCount != 0)
+            if (_charCtrlr.isGrounded && JumpCount != 0)
             {
                 JumpCount = 0;
             }
@@ -102,7 +104,7 @@ namespace Assets.Scripts.Player
         private void HandleJump()
         {
             // Determine if the player may jump (or is already jumping/isn't grounded).
-            if (IsJumpDesired && IsGrounded)
+            if (IsJumpDesired && _charCtrlr.isGrounded)
             {
                 IsJumping = true;
             }
@@ -113,13 +115,14 @@ namespace Assets.Scripts.Player
 
         public void Jump()
         {
-            if ((!IsJumpDesired || CurrentJumpForce <= 0.6f) && IsJumping)
+            if ((!IsJumpDesired || CurrentJumpForce <= 0.00001f) && IsJumping)
             {
                 IsJumping = false;
                 CurrentJumpForce = JumpForce;
                 return;
             }
-            _rigidbody.velocity += new Vector3(0, CurrentJumpForce, 0);
+            //_rigidbody.velocity += new Vector3(0, CurrentJumpForce, 0);
+            _movCtrl.AccelerateBy(new Vector3(0, CurrentJumpForce, 0));
             CurrentJumpForce -= JumpForce * 0.12f; // TODO: Make this not shit.
         }
         #endregion
@@ -136,7 +139,6 @@ namespace Assets.Scripts.Player
         private void HandleWallJump()
         {
             if (!_isWallJumpDesired) return;
-            if(!_isWallJumping) _rigidbody.velocity = Vector3.zero;
             _isWallJumping = true;
             IsJumping = false;
 
@@ -152,7 +154,6 @@ namespace Assets.Scripts.Player
                 _currentWallJumpForce = _wallJumpForce;
                 return;
             }
-            _rigidbody.velocity += new Vector3(0, _currentWallJumpForce, 0);
             _currentWallJumpForce -= _wallJumpForce * 0.12f; // TODO: Make this not shit.
         }
         #endregion
@@ -162,7 +163,7 @@ namespace Assets.Scripts.Player
         public bool AllowUserChangeDir;
         public bool AllowChangeDirection;
         public bool ChangeDirectionDesired;
-
+        
         public void HandleDirectionPowerups()
         {
             var directionPowerup = PowerUpManager.ActivePowerups.OfType<IDirectionPowerup>().FirstOrDefault();
@@ -176,16 +177,16 @@ namespace Assets.Scripts.Player
                 HandleDirection();
             }
         }
-
+        
         private void HandleDirection()
         {
             // Determine if the direction may be changed (if player is grounded).
-            if (ChangeDirectionDesired && AllowUserChangeDir && IsGrounded)
+            if (ChangeDirectionDesired && AllowUserChangeDir && _charCtrlr.isGrounded)
             {
                 ChangeDirection();
                 AllowUserChangeDir = false;
             }
-            else if (!AllowUserChangeDir && IsGrounded && !ChangeDirectionDesired)
+            else if (!AllowUserChangeDir && _charCtrlr.isGrounded && !ChangeDirectionDesired)
             {
                 AllowUserChangeDir = true;
             }
@@ -195,7 +196,6 @@ namespace Assets.Scripts.Player
         {
             if (AllowChangeDirection)
             {
-                _rigidbody.velocity = new Vector3(0, _rigidbody.velocity.y, 0); //makes it much snapper
                 MoveDir *= -1; // direction switch
             }
             AllowUserChangeDir = false;
@@ -207,15 +207,11 @@ namespace Assets.Scripts.Player
         public float Acceleration;
         public float MaxSpeed;
         public int MoveDir;
+        private MovementController _movCtrl;
 
         private void HandleMovement()
         {
-            _rigidbody.velocity += new Vector3(MoveDir*Acceleration, 0, 0);
-            // _moveDir is the sign whether to accelerate to the right or left.
-
-            Velocity = _rigidbody.velocity;
-            Velocity.x = Mathf.Clamp(Velocity.x, -MaxSpeed, MaxSpeed);
-            _rigidbody.velocity = Velocity;
+            _movCtrl.AccelerateBy(new Vector3(MoveDir*Acceleration, 0, 0));
         }
         #endregion
         
@@ -226,45 +222,17 @@ namespace Assets.Scripts.Player
 
         #region Collisions
 
-        public bool IsGrounded;
-        private bool _playerGroundedWasDetermined;
-
-        private void OnCollisionStay(Collision collisionInfo)
+        void OnControllerColliderHit(ControllerColliderHit hit)
         {
-            Velocity = _rigidbody.velocity;
-            foreach (ContactPoint contact in collisionInfo.contacts)
+            
+            if (hit.normal.x < -0.9 && MoveDir == 1) //Comparing the normal to 0.9 due to slight imprecision
             {
-                if (0.75f <= contact.normal.y && contact.normal.y <= 1.25f) //boilerplate code to support slopes
-                {
-                    IsGrounded = true;
-                    _playerGroundedWasDetermined = true;
-                    break;
-                }
-                if (!_playerGroundedWasDetermined)IsGrounded = false;
+                ChangeDirection();
             }
-        }
-
-       
-        void OnCollisionEnter(Collision collisionInfo)
-            // TODO: When moving toward the edge on a flat surface right after landing on it, the player will switch direction. Why is that? +++ Not sure if this is still true, hard to replicate
-        {
-            // ReSharper disable once LoopCanBeConvertedToQuery
-            foreach (ContactPoint contact in collisionInfo.contacts)
+            else if (hit.normal.x > 0.9 && MoveDir == -1)
             {
-                float normalX = Math.Abs(contact.normal.x);
-                float normalY = Math.Abs(contact.normal.y);
-                float des = 1.0f;
-
-
-                if (normalX - des <= 0.1f && normalY - des <= -0.25f)
-                    //(contact.normal.x != 0 && contact.normal != Vector3.up && contact.normal != Vector3.down)
-                {
-                    ChangeDirection();
-                    AllowChangeDirection = false; //This prevents the player from getting stuck on walls.
-
-                    if (!IsGrounded)_isWallJumpDesired = true;
-                    break;
-                }
+                ChangeDirection();
+                
             }
         }
         #endregion

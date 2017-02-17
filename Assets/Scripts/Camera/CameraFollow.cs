@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
 
-public class CameraFollow : MonoBehaviour 
+public class CameraFollow : MonoBehaviour
 {
-    public Transform Player;
+    public GameObject Player;
+    public Vector3 PlayerPosition;
+    public CharacterController _charCtrlr;
     public float TrackingSpeed = 8.0f;
     public float ZoomSpeed = 5.0f;
     public float AddedHeight = 4.0f;
@@ -12,24 +14,26 @@ public class CameraFollow : MonoBehaviour
     void Start ()
     {
         IsDisabled = false;
-        if (Player == null)
-            Player = GameObject.FindGameObjectWithTag("Player").transform;
+        if (Player == null) Player = GameObject.Find("Player");
+        PlayerPosition = Player.transform.position;
+        _charCtrlr = Player.GetComponent<CharacterController>();
     }
     
-    // Update is called once per frame
+    // LateUpdate is called after all other Updates every frame.
     void LateUpdate ()
     {
-
         if (IsDisabled) return;
         if (Player == null) return;
-        Vector3 pos = Player.position;
+
+        PlayerPosition = Player.transform.position;
+        Vector3 pos = PlayerPosition;
 
         pos.z = transform.position.z;
-        pos.y = Player.position.y + AddedHeight;
+        pos.y = PlayerPosition.y + AddedHeight;
 
 
-        transform.position = Vector3.Lerp(transform.position, pos, TrackingSpeed * Time.deltaTime);
-        transform.LookAt(Player);
+        transform.position = pos;
+        transform.LookAt(PlayerPosition);
     }
      
 }

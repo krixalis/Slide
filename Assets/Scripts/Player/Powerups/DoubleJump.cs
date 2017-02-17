@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class DoubleJump : Powerup, IJumpPowerup
 {
-    private CharControl _charctrl;
-    private bool _allowJump = false;
+    private PlayerController _charctrl;
+    private bool _allowJump;
 
 
-    public void HandleJump(CharControl charctrl)
+    public void HandleJump(PlayerController charctrl)
     {
         if (_charctrl == null) _charctrl = charctrl;
 

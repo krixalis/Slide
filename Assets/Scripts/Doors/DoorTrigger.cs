@@ -17,7 +17,7 @@ public class DoorTrigger : MonoBehaviour
     public Vector3 TargetPos;
 
     private GameObject _player;
-    private CharControl _playerCharControl;
+    private PlayerController _playerController;
     private bool _playerIsDisabled;
 
     // Use this for initialization
@@ -88,7 +88,7 @@ public class DoorTrigger : MonoBehaviour
             if (_player == null)
             {
                 _player = otherCollider.gameObject;
-                _playerCharControl = _player.GetComponent<CharControl>();
+                _playerController = _player.GetComponent<PlayerController>();
             }
 
             _startTime = Time.time;

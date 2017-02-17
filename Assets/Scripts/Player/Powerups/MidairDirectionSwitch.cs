@@ -4,19 +4,19 @@ namespace Assets.Scripts.Player.Powerups
 {
     public class MidairDirectionPowerup : Powerup, IDirectionPowerup //TODO: Probably want this to only allow one direction change in air
     {
-        private CharControl _charctrl;
-        public void HandleDirection(CharControl charctrl)
+        private PlayerController _playerCtrlr;
+        public void HandleDirection(PlayerController charctrl)
         {
-            _charctrl = charctrl;
+            _playerCtrlr = charctrl;
             // Determine if the direction may be changed (if player is grounded).
-            if (_charctrl.ChangeDirectionDesired && _charctrl.AllowUserChangeDir)
+            if (_playerCtrlr.ChangeDirectionDesired && _playerCtrlr.AllowUserChangeDir)
             {
-                _charctrl.ChangeDirection();
-                _charctrl.AllowUserChangeDir = false;
+                _playerCtrlr.ChangeDirection();
+                _playerCtrlr.AllowUserChangeDir = false;
             }
-            else if (!_charctrl.AllowUserChangeDir && !_charctrl.ChangeDirectionDesired)
+            else if (!_playerCtrlr.AllowUserChangeDir && !_playerCtrlr.ChangeDirectionDesired)
             {
-                _charctrl.AllowUserChangeDir = true;
+                _playerCtrlr.AllowUserChangeDir = true;
             }
         }
     }

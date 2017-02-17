@@ -20,7 +20,7 @@ public class SwallowPlayer : MonoBehaviour
     public bool IsPulling;
 
     private GameObject _player;
-    private CharControl _playerCharControl;
+    private PlayerController _playerController;
     private bool _playerIsDisabled;
 
     public string SceneName;
@@ -99,7 +99,7 @@ public class SwallowPlayer : MonoBehaviour
             if (_player == null)
             {
                 _player = otherCollider.gameObject;
-                _playerCharControl = _player.GetComponent<CharControl>();
+                _playerController = _player.GetComponent<PlayerController>();
             }
             _startTime = Time.time;
             _distance = Vector3.Distance(_player.transform.position, TargetPosBehindDoor);

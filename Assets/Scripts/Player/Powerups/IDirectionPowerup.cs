@@ -2,6 +2,6 @@
 {
     interface IDirectionPowerup
     {
-        void HandleDirection(CharControl charctrl);
+        void HandleDirection(PlayerController charctrl);
     }
 }

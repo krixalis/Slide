@@ -2,6 +2,6 @@
 {
     interface IJumpPowerup
     {
-        void HandleJump(CharControl charctrl);
+        void HandleJump(PlayerController charctrl);
     }
 }

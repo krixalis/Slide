@@ -10,7 +10,7 @@ namespace Assets.Scripts.Weapons
         public GameObject BlasterWeaponAttachment;
 
         public GameObject Player;
-        public CharControl PlayerCtrl;
+        public PlayerController PlayerCtrl;
 
         
         private bool _isInitialized;
@@ -26,7 +26,7 @@ namespace Assets.Scripts.Weapons
             BlasterPellet = Resources.Load("Ammo/BlasterPellet") as GameObject;
             
             Player = GameObject.Find("Player");
-            PlayerCtrl = Player.GetComponent<CharControl>();
+            PlayerCtrl = Player.GetComponent<PlayerController>();
 
             _isInitialized = true;
         }
