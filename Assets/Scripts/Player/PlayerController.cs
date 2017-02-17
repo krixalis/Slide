@@ -35,8 +35,7 @@ namespace Assets.Scripts.Player
             //weapon testing
             WeaponManager.Evaluate("Blaster");
             _blasterTest = WeaponManager.ActiveWeapons.OfType<IWeapon>().FirstOrDefault();
-
-
+            
             _charCtrlr = GetComponent<CharacterController>();
         }
 
@@ -147,13 +146,15 @@ namespace Assets.Scripts.Player
 
         private void WallJump()
         {
-            if (_currentWallJumpForce <= 0.6 && _isWallJumping)
+            if (_currentWallJumpForce == _wallJumpForce) _movCtrl.Velocity.y = 0f; //reset upwards momentum, because we don't want those to add up
+            if (_currentWallJumpForce <= 0.00001f && _isWallJumping)
             {
                 _isWallJumping = false;
                 _isWallJumpDesired = false;
                 _currentWallJumpForce = _wallJumpForce;
                 return;
             }
+            _movCtrl.AccelerateBy(new Vector3(0, _currentWallJumpForce, 0));
             _currentWallJumpForce -= _wallJumpForce * 0.12f; // TODO: Make this not shit.
         }
         #endregion
@@ -228,11 +229,13 @@ namespace Assets.Scripts.Player
             if (hit.normal.x < -0.9 && MoveDir == 1) //Comparing the normal to 0.9 due to slight imprecision
             {
                 ChangeDirection();
+                if (!_charCtrlr.isGrounded) _isWallJumpDesired = true;
             }
             else if (hit.normal.x > 0.9 && MoveDir == -1)
             {
                 ChangeDirection();
-                
+                if (!_charCtrlr.isGrounded) _isWallJumpDesired = true;
+
             }
         }
         #endregion
