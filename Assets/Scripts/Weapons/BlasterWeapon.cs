@@ -48,7 +48,7 @@ namespace Assets.Scripts.Weapons
             
             var pellet = Object.Instantiate(BlasterPellet);
             pellet.transform.position = Player.transform.position;
-            pellet.GetComponent<PelletBehaviour>().PelletVelocity = PlayerCtrl.MoveDir*_pelletVelocity;
+            pellet.GetComponent<PelletBehaviour>().PelletVelocity = _pelletVelocity;
 
             _nextFire = Time.time + _fireCooldown;
         }

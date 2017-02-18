@@ -48,6 +48,8 @@ namespace Assets.Scripts.Player
             IsJumpDesired = Input.GetButton("Jump");
 
             ChangeDirectionDesired = Input.GetButton("Fire1");
+            if (_charCtrlr.isGrounded) GetComponent<Renderer>().material.color = Color.white;
+            else GetComponent<Renderer>().material.color = Color.red;
         }
         
         // FixedUpdate is called once per tick.
@@ -146,7 +148,7 @@ namespace Assets.Scripts.Player
 
         private void WallJump()
         {
-            if (_currentWallJumpForce == _wallJumpForce) _movCtrl.Velocity.y = 0f; //reset upwards momentum, because we don't want those to add up
+            //if (_currentWallJumpForce == _wallJumpForce) _movCtrl.Velocity.y = 0f; //reset upwards momentum, because we don't want those to add up
             if (_currentWallJumpForce <= 0.00001f && _isWallJumping)
             {
                 _isWallJumping = false;
