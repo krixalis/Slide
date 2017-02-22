@@ -2,12 +2,13 @@
 
 public class MovementController : MonoBehaviour
 {
-    public Vector3 Position;
-    public Vector3 Velocity;
-    public Vector3 Gravity;
-    public float MaxXVelocity;
-    public float MaxYVelocity;
-    public bool ApplyGravity;
+    public Vector3 Pos;
+    public Vector3 Vel;
+    public Vector3 Grav;
+    public float MaxXVel;
+    public float MaxYVel;
+    public bool ApplyGrav;
+    public bool ApplyTinyGrav;
 
     private CharacterController _charCtrlr;
     
@@ -15,33 +16,33 @@ public class MovementController : MonoBehaviour
     void Start ()
     {
         _charCtrlr = GetComponent<CharacterController>();
-        Position = transform.position;
+        Pos = transform.position;
 
-        MaxXVelocity = 0.4f;
-        MaxYVelocity = 2f;
-        Gravity = new Vector3(0, -0.025f, 0);
+        MaxXVel = 0.4f;
+        MaxYVel = 2f;
+        Grav = new Vector3(0, -0.025f, 0);
     }
     
     // FixedUpdate is called once per tick
     void FixedUpdate()
     {
-        Position = transform.position;
+        Pos = transform.position;
 
-        if (ApplyGravity) AccelerateBy(Gravity);
-        else Velocity.y = 0f;
+        if (ApplyGrav) AccelerateBy(Grav);
+        else Vel.y = 0f;
 
-        MoveBy(Velocity);
+        MoveBy(Vel);
     }
 
     public void ClampVelocity()
     {
-        if (MaxXVelocity != 0f) Velocity.x = Mathf.Clamp(Velocity.x, -MaxXVelocity, MaxXVelocity);
-        if (MaxYVelocity != 0f) Velocity.y = Mathf.Clamp(Velocity.y, -MaxYVelocity, MaxYVelocity);
+        if (MaxXVel != 0f) Vel.x = Mathf.Clamp(Vel.x, -MaxXVel, MaxXVel);
+        if (MaxYVel != 0f) Vel.y = Mathf.Clamp(Vel.y, -MaxYVel, MaxYVel);
     }
 
     public void AccelerateBy(Vector3 desAccel)
     {
-        Velocity += desAccel;
+        Vel += desAccel;
         ClampVelocity();
     }
 
@@ -49,13 +50,13 @@ public class MovementController : MonoBehaviour
     
     public void MoveBy(Vector3 velocity)
     {
-        Position += velocity;
+        Pos += velocity;
         _charCtrlr.Move(velocity);
     }
 
     public void MoveTo(Vector3 desPosition)
     {
-        Position = desPosition;
-        transform.position = Position;
+        Pos = desPosition;
+        transform.position = Pos;
     }
 }

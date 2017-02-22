@@ -48,10 +48,11 @@ namespace Assets.Scripts.Player
             IsJumpDesired = Input.GetButton("Jump");
 
             ChangeDirectionDesired = Input.GetButton("Fire1");
-            if (_charCtrlr.isGrounded) GetComponent<Renderer>().material.color = Color.white;
-            else GetComponent<Renderer>().material.color = Color.red;
+            GetComponent<Renderer>().material.color = StickyGrounded ? Color.white : Color.red;
         }
-        
+
+        public bool StickyGrounded;
+
         // FixedUpdate is called once per tick.
         private void FixedUpdate()
         {
@@ -59,7 +60,7 @@ namespace Assets.Scripts.Player
             AllowChangeDirection = true;
             if (AllowControl == false)
             {
-                _movCtrl.Velocity = Vector3.zero;
+                _movCtrl.Vel = Vector3.zero;
                 return;
             }
 
@@ -68,13 +69,20 @@ namespace Assets.Scripts.Player
 
             HandleWallJump();
             HandleMovement(); //TODO: Handle Powerups
-            _movCtrl.ApplyGravity = !_charCtrlr.isGrounded;
+            _movCtrl.ApplyGrav = !StickyGrounded;
+
+            RaycastHit rayHit;
+            if (Physics.Raycast(transform.position, Vector3.down, out rayHit, 1.1f))
+            {
+                if (rayHit.normal == Vector3.up && _charCtrlr.isGrounded) StickyGrounded = true; //isGrounded shenanigans
+            }
+            else
+            {
+                StickyGrounded = false;
+            }
         }
 
-
-
         #region Jump
-
         public int JumpCount;
         public float JumpForce;
         public float CurrentJumpForce;
@@ -85,7 +93,7 @@ namespace Assets.Scripts.Player
 
         public void HandleJumpPowerups()
         {
-            if (_charCtrlr.isGrounded && JumpCount != 0)
+            if (StickyGrounded && JumpCount != 0)
             {
                 JumpCount = 0;
             }
@@ -105,11 +113,13 @@ namespace Assets.Scripts.Player
         private void HandleJump()
         {
             // Determine if the player may jump (or is already jumping/isn't grounded).
-            if (IsJumpDesired && _charCtrlr.isGrounded)
+            if (IsJumpDesired && StickyGrounded)
             {
+                //_movCtrl.Vel.y = 0f;
+                StickyGrounded = false;
                 IsJumping = true;
             }
-
+            // CANNOT JUMP WITH STICKYGROUND
             if (IsJumping) Jump();
         }
 
@@ -184,12 +194,12 @@ namespace Assets.Scripts.Player
         private void HandleDirection()
         {
             // Determine if the direction may be changed (if player is grounded).
-            if (ChangeDirectionDesired && AllowUserChangeDir && _charCtrlr.isGrounded)
+            if (ChangeDirectionDesired && AllowUserChangeDir && StickyGrounded)
             {
                 ChangeDirection();
                 AllowUserChangeDir = false;
             }
-            else if (!AllowUserChangeDir && _charCtrlr.isGrounded && !ChangeDirectionDesired)
+            else if (!AllowUserChangeDir && StickyGrounded && !ChangeDirectionDesired)
             {
                 AllowUserChangeDir = true;
             }
@@ -228,16 +238,24 @@ namespace Assets.Scripts.Player
         void OnControllerColliderHit(ControllerColliderHit hit)
         {
             
-            if (hit.normal.x < -0.9 && MoveDir == 1) //Comparing the normal to 0.9 due to slight imprecision
+            if (hit.normal.x < -0.9 && MoveDir == 1) // Checking if the player ran into a wall (Comparing the normal to 0.9 due to slight imprecision)
             {
                 ChangeDirection();
-                if (!_charCtrlr.isGrounded) _isWallJumpDesired = true;
+                if (!StickyGrounded) _isWallJumpDesired = true;
             }
             else if (hit.normal.x > 0.9 && MoveDir == -1)
             {
                 ChangeDirection();
-                if (!_charCtrlr.isGrounded) _isWallJumpDesired = true;
+                if (!StickyGrounded) _isWallJumpDesired = true;
 
+            }
+
+            if (hit.normal.y < -0.9) // If the player bonks his head, do this
+            {
+                IsJumping = false;
+                _isWallJumping = false;
+                _movCtrl.Vel.y = 0;
+                _movCtrl.AccelerateBy(new Vector3(0, -0.05f, 0));
             }
         }
         #endregion
