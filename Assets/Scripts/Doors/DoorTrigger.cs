@@ -25,7 +25,7 @@ public class DoorTrigger : MonoBehaviour
     {
         if(PullSpeed == 0f) PullSpeed = 3.5f;
         
-        TargetPoint = transform.FindChild("TargetPoint").gameObject;
+        TargetPoint = transform.Find("TargetPoint").gameObject;
         TargetPos = TargetPoint.transform.position;
         
         if (DoorType == "")

@@ -24,16 +24,19 @@ namespace Assets.Scripts.Player
 
             AllowUserChangeDir = true;
             MoveDir = 1; // = right, -1 = left
-            
+            //TODO: Get rid of magic numbers, or at least get rid of them being applied without context (i.e. turn into percentage or something)
             JumpForce = 0.175f; // Jump() specific.
-            CurrentJumpForce = JumpForce; // ^
-            _wallJumpForce = 0.175f; // ^
+            MaxAppliedJumpForce = 0.2f; // Another magic number
+            CurrentJumpForce = 0f; // ^
+            AllowJump = true;
+            _wallJumpForce = 0.075f; // ^
 
             AllowChangeDirection = true;
-            _allowWallJump = true;
-            
+            _allowWallJump = false;
+            IsJumping = false;
+
             //weapon testing
-            WeaponManager.Evaluate("Blaster");
+            WeaponManager.AddWeapon("Blaster");
             _blasterTest = WeaponManager.ActiveWeapons.OfType<IWeapon>().FirstOrDefault();
             
             _charCtrlr = GetComponent<CharacterController>();
@@ -53,10 +56,12 @@ namespace Assets.Scripts.Player
 
         public bool StickyGrounded;
 
-        // FixedUpdate is called once per tick.
+        // FixedUpdate is called once per tick. TODO: Wait is that actually true though?
         private void FixedUpdate()
         {
-            //if (-MaxSpeed*0.9 > Velocity.x || Velocity.x > MaxSpeed*0.9) AllowChangeDirection = true; //Buffer for how quickly a user can switch directions. This also prevents them from being able to get stuck on walls. TODO: This should probably instead be prevented by implementing a timed buffer where direction may not be changed?
+            //if (-MaxSpeed*0.9 > Velocity.x || Velocity.x > MaxSpeed*0.9) AllowChangeDirection = true; 
+            //Buffer for how quickly a user can switch directions. This also prevents them from being able to get stuck on walls. 
+            //TODO: This should probably instead be prevented by implementing a timed buffer where direction may not be changed?
             AllowChangeDirection = true;
             if (AllowControl == false)
             {
@@ -67,7 +72,8 @@ namespace Assets.Scripts.Player
             HandleDirectionPowerups();
             HandleJumpPowerups();
 
-            HandleWallJump();
+            HandleWallJump();            
+
             HandleMovement(); //TODO: Handle Powerups
             _movCtrl.ApplyGrav = !StickyGrounded;
 
@@ -86,8 +92,10 @@ namespace Assets.Scripts.Player
         public int JumpCount;
         public float JumpForce;
         public float CurrentJumpForce;
+        public float MaxAppliedJumpForce;
         public bool IsJumping;
         public bool IsJumpDesired;
+        public bool AllowJump;
 
         private IJumpPowerup _jumpPowerup;
 
@@ -108,32 +116,42 @@ namespace Assets.Scripts.Player
             {
                 HandleJump();
             }
+
+            _movCtrl.AccelerateBy(new Vector3(0, CurrentJumpForce, 0));
+            AllowJump = IsJumpDesired == false; // needs to be updated after the jump, because both this and IsJumpDesired need to be true at the same time.
         }
 
         private void HandleJump()
         {
             // Determine if the player may jump (or is already jumping/isn't grounded).
-            if (IsJumpDesired && StickyGrounded)
+            if (IsJumpDesired && StickyGrounded && AllowJump)
             {
-                //_movCtrl.Vel.y = 0f;
+                CurrentJumpForce = JumpForce;
                 StickyGrounded = false;
                 IsJumping = true;
             }
+
             // CANNOT JUMP WITH STICKYGROUND
             if (IsJumping) Jump();
+            else CurrentJumpForce = 0f;
         }
 
 
         public void Jump()
         {
             if ((!IsJumpDesired || CurrentJumpForce <= 0.00001f) && IsJumping)
-            {
+            {              
                 IsJumping = false;
-                CurrentJumpForce = JumpForce;
+                CurrentJumpForce = 0f;
                 return;
             }
+
+            Debug.Log(CurrentJumpForce);
+
             //_rigidbody.velocity += new Vector3(0, CurrentJumpForce, 0);
-            _movCtrl.AccelerateBy(new Vector3(0, CurrentJumpForce, 0));
+
+            //_movCtrl.AccelerateBy(new Vector3(0, CurrentJumpForce, 0));
+
             CurrentJumpForce -= JumpForce * 0.12f; // TODO: Make this not shit.
         }
         #endregion
@@ -141,19 +159,25 @@ namespace Assets.Scripts.Player
         #region WallJump
 
         private float _wallJumpForce;
-        private float _currentWallJumpForce;
-
-        private bool _isWallJumpDesired;
-        private bool _isWallJumping;
-        private bool _allowWallJump;
+        public float _currentWallJumpForce;
+        
+        public bool _isWallJumping;
+        public bool _allowWallJump;
 
         private void HandleWallJump()
         {
-            if (!_isWallJumpDesired) return;
-            _isWallJumping = true;
-            IsJumping = false;
+            if (IsJumpDesired && _allowWallJump)
+            {
+                _isWallJumping = true;
+                _currentWallJumpForce = _wallJumpForce;
+                IsJumping = false;
+                _allowWallJump = false;
+            }
 
-            if(_isWallJumping) WallJump();
+            if (_isWallJumping) WallJump();
+            else _currentWallJumpForce = 0f;
+
+            _movCtrl.AccelerateBy(new Vector3(0, _currentWallJumpForce, 0));
         }
 
         private void WallJump()
@@ -162,11 +186,12 @@ namespace Assets.Scripts.Player
             if (_currentWallJumpForce <= 0.00001f && _isWallJumping)
             {
                 _isWallJumping = false;
-                _isWallJumpDesired = false;
-                _currentWallJumpForce = _wallJumpForce;
+                _currentWallJumpForce = 0f;
                 return;
             }
-            _movCtrl.AccelerateBy(new Vector3(0, _currentWallJumpForce, 0));
+
+            //_movCtrl.AccelerateBy(new Vector3(0, _currentWallJumpForce, 0));
+
             _currentWallJumpForce -= _wallJumpForce * 0.12f; // TODO: Make this not shit.
         }
         #endregion
@@ -226,12 +251,18 @@ namespace Assets.Scripts.Player
         {
             _movCtrl.AccelerateBy(new Vector3(MoveDir*Acceleration, 0, 0));
         }
-        #endregion
+
+        public void CancelYVelocity()
+        {
+            _movCtrl.Vel.y = 0f;
+            CurrentJumpForce = 0f;
+        }        
         
         public bool IsFalling()
         {
             return Velocity.y < 0f;
         }
+        #endregion
 
         #region Collisions
 
@@ -241,12 +272,18 @@ namespace Assets.Scripts.Player
             if (hit.normal.x < -0.9 && MoveDir == 1) // Checking if the player ran into a wall (Comparing the normal to 0.9 due to slight imprecision)
             {
                 ChangeDirection();
-                if (!StickyGrounded) _isWallJumpDesired = true;
+                if (!StickyGrounded && IsJumpDesired && _movCtrl.Vel.y > 0)
+                {
+                    _allowWallJump = true;
+                }
             }
             else if (hit.normal.x > 0.9 && MoveDir == -1)
             {
                 ChangeDirection();
-                if (!StickyGrounded) _isWallJumpDesired = true;
+                if (!StickyGrounded && IsJumpDesired && _movCtrl.Vel.y > 0)
+                {
+                    _allowWallJump = true;
+                }
 
             }
 
@@ -254,7 +291,7 @@ namespace Assets.Scripts.Player
             {
                 IsJumping = false;
                 _isWallJumping = false;
-                _movCtrl.Vel.y = 0;
+                CancelYVelocity();
                 _movCtrl.AccelerateBy(new Vector3(0, -0.05f, 0));
             }
         }

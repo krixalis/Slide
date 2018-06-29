@@ -41,7 +41,7 @@ public class SwallowPlayer : MonoBehaviour
 
 	    if (TargetPointBehindDoor == null)
 	    {
-	        TargetPointBehindDoor = transform.FindChild("TargetPointBehindDoor").gameObject;
+	        TargetPointBehindDoor = transform.Find("TargetPointBehindDoor").gameObject;
 	    }
         TargetPosBehindDoor = TargetPointBehindDoor.transform.position;
 

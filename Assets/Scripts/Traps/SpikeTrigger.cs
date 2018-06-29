@@ -57,7 +57,8 @@ public class SpikeTrigger : MonoBehaviour
 
     private bool IsIdling()
     {
-        return !_spikesUp && !GetComponent<Animation>()["SpikesRevert"].enabled && !GetComponent<Animation>()["SpikesTrigger"].enabled;
+        //return !_spikesUp && !GetComponent<Animation>()["SpikesRevert"].enabled && !GetComponent<Animation>()["SpikesTrigger"].enabled;
+        return true;
     }
 
     private void OnTriggerEnter(Collider otherCollider)

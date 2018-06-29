@@ -14,7 +14,7 @@ namespace Assets.Scripts.Weapons
         private static IWeapon _leftWeapon;
         private static IWeapon _rightWeapon;
         
-        public static void Evaluate(string pWeaponName)
+        public static void AddWeapon(string pWeaponName)
         {
             switch (pWeaponName)
             {
