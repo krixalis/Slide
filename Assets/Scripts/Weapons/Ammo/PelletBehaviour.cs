@@ -19,16 +19,16 @@ public class PelletBehaviour : MonoBehaviour
         _timeShot = Time.time;
         _maxLiveTime = 2f;
 
-        _aimManager = GameObject.Find("Aim").GetComponent<AimManager>();
-        _target = _aimManager.AimAtPosition;
+        //_aimManager = GameObject.Find("Aim").GetComponent<AimManager>();
+        //_target = _aimManager.AimAtPosition;
 
-        transform.LookAt(_target);
-        transform.Rotate(Vector3.right, 90f); //point one end to where it's "looking"
+        //transform.LookAt(_target);
+        transform.Rotate(Vector3.back, 90f); //point one end to where it's "looking"
 
-        _direction = (_target - transform.position).normalized;
+        //_direction = (_target - transform.position).normalized;
         
-        _rigidBody = transform.GetComponent<Rigidbody>();
-        _rigidBody.velocity = _direction * PelletVelocity;
+        //_rigidBody = transform.GetComponent<Rigidbody>();
+        //_rigidBody.velocity = _direction * PelletVelocity;
     }
 
     void Update()

@@ -34,7 +34,7 @@ public class MovementController : MonoBehaviour
         MoveBy(Vel);
     }
 
-    public void ClampVelocity()
+    public void ClampVelocity() //Don't think this is a good thing to do, actually.
     {
         if (MaxXVel != 0f) Vel.x = Mathf.Clamp(Vel.x, -MaxXVel, MaxXVel);
         if (MaxYVel != 0f) Vel.y = Mathf.Clamp(Vel.y, -MaxYVel, MaxYVel);
@@ -43,10 +43,8 @@ public class MovementController : MonoBehaviour
     public void AccelerateBy(Vector3 desAccel)
     {
         Vel += desAccel;
-        ClampVelocity();
+        ClampVelocity(); //TODO: Take this away without breaking regular movement. (put the clamp in a MovementHandler)
     }
-
-
     
     public void MoveBy(Vector3 velocity)
     {

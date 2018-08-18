@@ -30,6 +30,8 @@ namespace Assets.Scripts.Player
             CurrentJumpForce = 0f; // ^
             AllowJump = true;
             _wallJumpForce = 0.075f; // ^
+            MaxWallJumpVel = 0.5f;
+            WallJumpDeceleration = 0.12f;
 
             AllowChangeDirection = true;
             _allowWallJump = false;
@@ -173,16 +175,17 @@ namespace Assets.Scripts.Player
                 IsJumping = false;
                 _allowWallJump = false;
             }
-
+            if (_currentWallJumpForce != 0) Debug.Log(_currentWallJumpForce);
             if (_isWallJumping) WallJump();
             else _currentWallJumpForce = 0f;
-
-            _movCtrl.AccelerateBy(new Vector3(0, _currentWallJumpForce, 0));
+            
         }
 
-        private void WallJump()
+        public float MaxWallJumpVel;
+        public float WallJumpDeceleration;
+
+        private void WallJump() //TODO: Make it so the upward boost amount resets after a WJ - - - Looks like it already does this, as it should. the problem was that when walls are too far apart the angle at which you hit a wall becomes too shallow (?) so you actually just don't walljump anymore, but the upward momentum still takes time to wind down.
         {
-            //if (_currentWallJumpForce == _wallJumpForce) _movCtrl.Velocity.y = 0f; //reset upwards momentum, because we don't want those to add up
             if (_currentWallJumpForce <= 0.00001f && _isWallJumping)
             {
                 _isWallJumping = false;
@@ -190,9 +193,15 @@ namespace Assets.Scripts.Player
                 return;
             }
 
-            //_movCtrl.AccelerateBy(new Vector3(0, _currentWallJumpForce, 0));
+            if (_movCtrl.Vel.y + _currentWallJumpForce >= MaxWallJumpVel)
+                _currentWallJumpForce = _movCtrl.Vel.y- MaxWallJumpVel; 
 
-            _currentWallJumpForce -= _wallJumpForce * 0.12f; // TODO: Make this not shit.
+            else if (_movCtrl.Vel.y >= MaxWallJumpVel)
+                _currentWallJumpForce = 0f;
+            
+            _movCtrl.AccelerateBy(new Vector3(0, _currentWallJumpForce, 0));
+
+            _currentWallJumpForce -= _wallJumpForce * WallJumpDeceleration; 
         }
         #endregion
 
